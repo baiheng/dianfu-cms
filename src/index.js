@@ -9,7 +9,7 @@ const rootRoute = {
 	component: require('./components/App'),
 
     indexRoute: {
-        component: require('./Home'),
+        component: require('./Home/Home'),
     },
 
     childRoutes: [

@@ -11,7 +11,7 @@ class Framework extends React.Component {
         return (
             <div>
                 <Head height={height} />
-                <SiderBar width={left} top={height} />
+                <SiderBar width={left} height={height} />
                 <div style={{
                     top: height, 
                     position: "absolute", 

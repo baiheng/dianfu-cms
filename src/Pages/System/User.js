@@ -5,7 +5,7 @@ import { OverlayTrigger, Popover } from 'react-bootstrap'
 import { URL } from 'config'
 
 
-class LhbItem extends React.Component {
+class User extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -385,7 +385,7 @@ class LhbItem extends React.Component {
     }
 }
 
-LhbItem.defaultProps = {
+User.defaultProps = {
     ticket: {},
     group_dict: {},
     group_list: [],
@@ -394,4 +394,4 @@ LhbItem.defaultProps = {
     delUserGroupMember: ({group_id=-1, division_id=-1}) => {},
 }
 
-module.exports = LhbItem
+module.exports = User
