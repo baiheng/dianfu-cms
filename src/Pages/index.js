@@ -1,5 +1,9 @@
+import { user } from 'config'
+
 module.exports = {
     path: 'pages',
+
+    onEnter: () => {user.getUserInfo()},
 
     getChildRoutes(location, cb) {
         require.ensure([], (require) => {

@@ -10,7 +10,7 @@ new WebpackDevServer(webpack(config), {
     proxy: {  
             '/api/': {  
             	changeOrigin: true,
-                target: 'http://gp.xiaoshutech.com/',  
+                target: 'http://120.76.21.117/',  
                 secure: false  
             }  
         }  

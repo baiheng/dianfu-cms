@@ -8,14 +8,21 @@ class User{
         this.menus = {};
         this.notification_num = 0;
         this.timeout = "";
-        this.token = 0;
     }
     
-    userInfo(){
-        if(this.id == -1){
-            return false;
+    getUserInfo(){
+        if(this.id != -1){
+            return;
         }else{
-            return true;
+            $.ajax({
+                url: "/api/v1/system/account",
+                type: "GET",
+                dataType: "json",
+                async: false,
+                success: function(data){
+                    console.log(data);
+                }
+            })
         }
     }
 
@@ -24,10 +31,10 @@ class User{
     }
 
     showRequestError(data){
-        if(data.ret == -1){
+        if(data.ret == 1){
             hashHistory.push("/login");
-        }else if(data.ret == -2){
-            this.showMsg("没有访问权限");
+        }else if(data.ret == 2){
+            this.showMsg("服务器出了点故障");
         }else{
             this.showMsg(data.msg);
         }

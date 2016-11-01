@@ -3,8 +3,8 @@ module.exports = {
 
     childRoutes: [
         {
-            path: 'user',
-            component: require("./User"), 
+            path: 'account',
+            component: require("./Account"), 
         },
     ],
 }

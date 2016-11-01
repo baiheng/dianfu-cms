@@ -2,6 +2,8 @@ import React from 'react'
 import { hashHistory } from 'react-router'
 
 import { Menu, Icon, Switch } from 'antd';
+import { user } from 'config'
+
 const SubMenu = Menu.SubMenu;
 
 

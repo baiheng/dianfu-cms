@@ -14,7 +14,7 @@ class Login extends React.Component {
                 user.showMsg("密码错误");
                 break;
             case "3":
-                user.showMsg("该邮箱地址没有注册，请联系陈柏恒");
+                user.showMsg("该邮箱地址没有注册");
                 break;
         }
     }
