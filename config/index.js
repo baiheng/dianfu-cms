@@ -20,7 +20,6 @@ class User{
                 dataType: "json",
                 async: false,
                 success: function(data){
-                    console.log(data);
                 }
             })
         }
