@@ -4,6 +4,71 @@ import { Table, Button, Icon, Modal, Form, Input, Radio, Select } from 'antd'
 import { user } from 'config'
 
 
+const CollectionCreateForm = Form.create()(
+    (props) => {
+        const { visible, onCancel, onOk, form, flag, title, data, opt} = props;
+        const { getFieldDecorator } = form;
+        let i = opt == "new"? <Input >:<Input disabled />;
+        return (
+            <Modal
+                visible={visible}
+                title={title}
+                onCancel={onCancel}
+                onOk={onOk}
+            >
+                <Form vertical>
+                    <Form.Item label="登录邮箱">
+                        {getFieldDecorator('email', {
+                            rules: [{ required: true, message: "不能为空" }],
+                            initialValue: opt == "new"? "": data.email,
+                        })(
+                            {i}
+                        )}
+                    </Form.Item>
+                    <Form.Item label="登录密码">
+                        {getFieldDecorator('password', {
+                            rules: [{ required: opt == "new", message: "不能为空" }],
+                        })(
+                            <Input type="password" placeholder="重置密码" />
+                        )}
+                    </Form.Item>
+                    <Form.Item label="真实姓名">
+                        {getFieldDecorator('name', {
+                            rules: [{ required: true, message: "不能为空" }],
+                            initialValue: opt == "new"? "": data.name,
+                        })(
+                            <Input />
+                        )}
+                    </Form.Item>
+                    <Form.Item label="手机号码">
+                        {getFieldDecorator('phone', {
+                            initialValue: opt == "new"? "": data.phone,
+                        })(
+                            <Input />
+                        )}
+                    </Form.Item>
+                    <Form.Item className="collection-create-form_last-form-item">
+                        {getFieldDecorator('flag', {
+                            initialValue: opt == "new"? "0": "" + data.flag,
+                        })(
+                            <Select style={{ width: 120 }}>
+                            {
+                                flag.map((item, index) => {
+                                    return (
+                                        <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>
+                                    )
+                                })
+                            }
+                            </Select>
+                        )}
+                    </Form.Item>
+                </Form>
+            </Modal>
+    );
+  }
+);
+
+
 class Account extends React.Component {
     constructor(props, context) {
         super(props, context);
@@ -14,7 +79,6 @@ class Account extends React.Component {
             modalType: "close",
             confirmLoading: false,
             editRecord: {},
-            addRecord: {},
         }
     }
 
@@ -81,11 +145,11 @@ class Account extends React.Component {
         })
     }
 
-    newAccount(){
+    newAccount(data){
         $.ajax({
             url: "/api/v1/system/account",
             type: "POST",
-            data: this.state.addRecord,
+            data: data,
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -108,11 +172,11 @@ class Account extends React.Component {
         })
     }
 
-    editAccount(){
+    editAccount(data){
         $.ajax({
             url: "/api/v1/system/account",
             type: "PUT",
-            data: this.state.editRecord,
+            data: Object.assign(this.state.editRecord, data),
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -133,22 +197,6 @@ class Account extends React.Component {
                 });
             }.bind(this),
         })
-    }
-
-    handleRecordChangeRecord(state, name, value){
-        let a = {};
-        a[name] = value;
-        let newRecord = Object.assign(this.state[state], a);
-        console.log(newRecord, value);
-        if(state == "editRecord"){
-            this.setState({
-                editRecord: newRecord
-            })   
-        }else{
-            this.setState({
-                addRecord: newRecord
-            })   
-        }     
     }
 
     render(){
@@ -158,13 +206,13 @@ class Account extends React.Component {
                 key: "id",
                 dataIndex: 'id',
             },{
-                title: '姓名',
-                key: 'name',
-                dataIndex: 'name',
-            },{
                 title: '邮箱',
                 key: 'email',
                 dataIndex: 'email',
+            },{
+                title: '姓名',
+                key: 'name',
+                dataIndex: 'name',
             },{
                 title: '电话',
                 key: 'phone',
@@ -211,12 +259,6 @@ class Account extends React.Component {
                                     onClick={()=>{
                                         this.setState({
                                             modalType: "add",
-                                            addRecord: {
-                                                email: "",
-                                                name: "",
-                                                password: "",
-                                                flag: 0,
-                                            },
                                         });
                                     }}
                                 >
@@ -249,101 +291,61 @@ class Account extends React.Component {
                     </div>
                 </div>
 
-                <Modal title="编辑账户"
-                    visible={this.state.modalType == "edit"}
-                    onOk={this.editAccount.bind(this)}
-                    confirmLoading={this.state.confirmLoading}
-                    onCancel={()=>{
-                        this.setState({
-                            modalType: "close",
-                        });
+                <CollectionCreateForm
+                    ref={(form) => {
+                        this.newForm = form;
                     }}
-                    maskClosable={false}
-                >
-                    <Form vertical onChange={(e) => {
-                        let name = e.target.name;
-                        let value = e.target.value;
-                        let a = {};
-                        a[name] = value;
-                        let newRecord = Object.assign(this.state.editRecord, a);
-                        this.setState({
-                            editRecord: newRecord
-                        })
-                    }}>
-                        <Form.Item label="登录邮箱"  required>
-                            <Input defaultValue="" value={this.state.editRecord.email} name="email" disabled />
-                        </Form.Item>
-                        <Form.Item label="登录密码" required>
-                            <Input defaultValue="" value={this.state.editRecord.password} 
-                            placeholder="重置新密码"
-                            name="password" type="password" />
-                        </Form.Item>
-                        <Form.Item label="真实姓名"  required>
-                            <Input defaultValue="" value={this.state.editRecord.name} name="name" />
-                        </Form.Item>
-                        <Form.Item label="手机号码" >
-                            <Input defaultValue="" value={this.state.editRecord.phone} name="phone" />
-                        </Form.Item>
-                        <Select value={"" + this.state.editRecord.flag} style={{ width: 120 }} onChange={(value)=>{
-                            this.handleRecordChangeRecord("editRecord", "flag", value)
-                        }} required>
-                        {
-                            flag.map((item, index) => {
-                                return (
-                                    <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>
-                                )
-                            })
-                        }
-                        </Select>
-                    </Form>
-                </Modal>
-
-                <Modal title="添加账户"
                     visible={this.state.modalType == "add"}
-                    onOk={this.newAccount.bind(this)}
-                    confirmLoading={this.state.confirmLoading}
                     onCancel={()=>{
                         this.setState({
                             modalType: "close",
                         });
                     }}
-                    maskClosable={false}
-                >
-                    <Form vertical onChange={(e) => {
-                        let name = e.target.name;
-                        let value = e.target.value;
-                        let a = {};
-                        a[name] = value;
-                        let newRecord = Object.assign(this.state.addRecord, a);
+                    flag={flag}
+                    title="新建账号"
+                    opt="new"
+                    data={this.state.addRecord}
+                    onOk={() =>{
+                        this.newForm.validateFields((err, values) => {
+                            if (err) {
+                                return;
+                            }
+                            console.log('Received values of form: ', values);
+                            this.newForm.resetFields();
+                            this.setState({ 
+                                modalType: "close" 
+                            });
+                        });
+                    }}
+                />
+
+                <CollectionCreateForm
+                    ref={(form) => {
+                        this.editForm = form;
+                    }}
+                    visible={this.state.modalType == "edit"}
+                    onCancel={()=>{
                         this.setState({
-                            addRecord: newRecord
-                        })
-                    }}>
-                        <Form.Item label="登录邮箱" required>
-                            <Input defaultValue="" value={this.state.addRecord.email} name="email" required/>
-                        </Form.Item>
-                        <Form.Item label="登录密码" required>
-                            <Input defaultValue="" value={this.state.addRecord.password} name="password" type="password" />
-                        </Form.Item>
-                        <Form.Item label="真实姓名" required>
-                            <Input defaultValue="" value={this.state.addRecord.name} name="name" />
-                        </Form.Item>
-                        <Form.Item label="手机号码" >
-                            <Input defaultValue="" value={this.state.addRecord.phone} name="phone" />
-                        </Form.Item>
-                        <Select value={"" + this.state.addRecord.flag} style={{ width: 120 }} onChange={(value)=>{
-                            this.handleRecordChangeRecord("addRecord", "flag", value)
-                        }} required>
-                        {
-                            flag.map((item, index) => {
-                                return (
-                                    <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>
-                                )
-                            })
-                        }
-                        </Select>
-                    </Form>
-                </Modal>
+                            modalType: "close",
+                        });
+                    }}
+                    flag={flag}
+                    title="修改账号信息"
+                    opt="edit"
+                    data={this.state.editRecord}
+                    onOk={() =>{
+                        this.editForm.validateFields((err, values) => {
+                            if (err) {
+                                return;
+                            }
+                            console.log('Received values of form: ', values);
+                            this.editForm.resetFields();
+                            this.setState({ 
+                                modalType: "close" 
+                            });
+                        });
+                    }}
+                />
 
             </div>
         )
