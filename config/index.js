@@ -18,7 +18,6 @@ class User{
                 url: "/api/v1/system/account",
                 type: "GET",
                 dataType: "json",
-                async: false,
                 success: function(data){
                 }
             })
@@ -31,9 +30,9 @@ class User{
 
     showRequestError(data){
         if(data.ret == 1){
-            hashHistory.push("/login");
-        }else if(data.ret == 2){
             this.showMsg("服务器出了点故障");
+        }else if(data.ret == 2){
+            hashHistory.push("/login");
         }else{
             this.showMsg(data.msg);
         }

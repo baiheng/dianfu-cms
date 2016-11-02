@@ -23,7 +23,7 @@ class Head extends React.Component {
                     cursor: "pointer",
                     color: "#33a597",
                 }}>
-                点孵CMS
+                CMS
             </div>
         </div>
     )
