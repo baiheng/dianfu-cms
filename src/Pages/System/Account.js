@@ -6,23 +6,24 @@ import { user } from 'config'
 
 const CollectionCreateForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, flag, title, data, opt} = props;
+        const { visible, onCancel, onOk, form, flag, title, data, opt, confirmLoading} = props;
         const { getFieldDecorator } = form;
-        let i = opt == "new"? <Input >:<Input disabled />;
         return (
             <Modal
                 visible={visible}
                 title={title}
                 onCancel={onCancel}
                 onOk={onOk}
+                confirmLoading={confirmLoading}
+                maskClosable={false}
             >
                 <Form vertical>
                     <Form.Item label="登录邮箱">
                         {getFieldDecorator('email', {
-                            rules: [{ required: true, message: "不能为空" }],
+                            rules: [{ required: opt == "new", message: "不能为空" }],
                             initialValue: opt == "new"? "": data.email,
                         })(
-                            {i}
+                            opt == "new"? <Input /> : <Input disabled />
                         )}
                     </Form.Item>
                     <Form.Item label="登录密码">
@@ -79,6 +80,7 @@ class Account extends React.Component {
             modalType: "close",
             confirmLoading: false,
             editRecord: {},
+            selectedRowKeys: [0],
         }
     }
 
@@ -271,6 +273,23 @@ class Account extends React.Component {
                         <div className="content-bg">
                             <Table 
                                 bordered
+                                rowSelection={{
+                                    type: "radio",
+                                    selectedRowKeys: this.state.selectedRowKeys,
+                                    onChange: (selectedRowKeys, selectedRows) =>{
+                                        console.log(selectedRows);
+                                        this.setState({
+                                            selectedRowKeys: selectedRowKeys,
+                                        })
+                                    }
+                                }}
+                                onRowClick={(record, index) => {
+                                    console.log(record);
+                                    this.setState({
+                                        selectedRowKeys: [index],
+                                    })
+                                }}
+                                filterMultiple={false}
                                 columns={columns} 
                                 dataSource={this.state.accountList} 
                                 loading={this.state.tableLoading} 
@@ -305,16 +324,14 @@ class Account extends React.Component {
                     title="新建账号"
                     opt="new"
                     data={this.state.addRecord}
+                    confirmLoading={this.state.confirmLoading}
                     onOk={() =>{
                         this.newForm.validateFields((err, values) => {
                             if (err) {
                                 return;
                             }
-                            console.log('Received values of form: ', values);
                             this.newForm.resetFields();
-                            this.setState({ 
-                                modalType: "close" 
-                            });
+                            this.newAccount(values);
                         });
                     }}
                 />
@@ -332,17 +349,15 @@ class Account extends React.Component {
                     flag={flag}
                     title="修改账号信息"
                     opt="edit"
+                    confirmLoading={this.state.confirmLoading}
                     data={this.state.editRecord}
                     onOk={() =>{
                         this.editForm.validateFields((err, values) => {
                             if (err) {
                                 return;
                             }
-                            console.log('Received values of form: ', values);
                             this.editForm.resetFields();
-                            this.setState({ 
-                                modalType: "close" 
-                            });
+                            this.editAccount(values);
                         });
                     }}
                 />
