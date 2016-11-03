@@ -1,5 +1,6 @@
 import { hashHistory } from 'react-router'
 // 用户属性
+
 class User{
     constructor(){
         this.id = -1;

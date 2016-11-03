@@ -4,9 +4,9 @@ import { Table, Button, Icon, Modal, Form, Input, Radio, Select } from 'antd'
 import { user } from 'config'
 
 
-const CollectionCreateForm = Form.create()(
+const NewForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, flag, title, data, opt, confirmLoading} = props;
+        const { visible, onCancel, onOk, form, flag, title, confirmLoading} = props;
         const { getFieldDecorator } = form;
         return (
             <Modal
@@ -20,37 +20,37 @@ const CollectionCreateForm = Form.create()(
                 <Form vertical>
                     <Form.Item label="登录邮箱">
                         {getFieldDecorator('email', {
-                            rules: [{ required: opt == "new", message: "不能为空" }],
-                            initialValue: opt == "new"? "": data.email,
+                            rules: [{ required: true, message: "不能为空" }],
+                            initialValue: "",
                         })(
-                            opt == "new"? <Input /> : <Input disabled />
+                            <Input />
                         )}
                     </Form.Item>
                     <Form.Item label="登录密码">
                         {getFieldDecorator('password', {
-                            rules: [{ required: opt == "new", message: "不能为空" }],
+                            rules: [{ required: true, message: "不能为空" }],
                         })(
-                            <Input type="password" placeholder="重置密码" />
+                            <Input type="password"  />
                         )}
                     </Form.Item>
                     <Form.Item label="真实姓名">
                         {getFieldDecorator('name', {
                             rules: [{ required: true, message: "不能为空" }],
-                            initialValue: opt == "new"? "": data.name,
+                            initialValue: "",
                         })(
                             <Input />
                         )}
                     </Form.Item>
                     <Form.Item label="手机号码">
                         {getFieldDecorator('phone', {
-                            initialValue: opt == "new"? "": data.phone,
+                            initialValue: "",
                         })(
                             <Input />
                         )}
                     </Form.Item>
                     <Form.Item className="collection-create-form_last-form-item">
                         {getFieldDecorator('flag', {
-                            initialValue: opt == "new"? "0": "" + data.flag,
+                            initialValue: "0",
                         })(
                             <Select style={{ width: 120 }}>
                             {
@@ -69,6 +69,69 @@ const CollectionCreateForm = Form.create()(
   }
 );
 
+const EditForm = Form.create()(
+    (props) => {
+        const { visible, onCancel, onOk, form, flag, title, confirmLoading, data} = props;
+        const { getFieldDecorator } = form;
+        return (
+            <Modal
+                visible={visible}
+                title={title}
+                onCancel={onCancel}
+                onOk={onOk}
+                confirmLoading={confirmLoading}
+                maskClosable={false}
+            >
+                <Form vertical>
+                    <Form.Item label="登录邮箱">
+                        {getFieldDecorator('email', {
+                            initialValue: data.email,
+                        })(
+                            <Input disabled />
+                        )}
+                    </Form.Item>
+                    <Form.Item label="登录密码">
+                        {getFieldDecorator('password', {
+                            initialValue: data.password,
+                        })(
+                            <Input type="password" placeholder="重置新密码才填" />
+                        )}
+                    </Form.Item>
+                    <Form.Item label="真实姓名">
+                        {getFieldDecorator('name', {
+                            rules: [{ required: true, message: "不能为空" }],
+                            initialValue: data.name,
+                        })(
+                            <Input />
+                        )}
+                    </Form.Item>
+                    <Form.Item label="手机号码">
+                        {getFieldDecorator('phone', {
+                            initialValue: data.phone,
+                        })(
+                            <Input />
+                        )}
+                    </Form.Item>
+                    <Form.Item className="collection-create-form_last-form-item">
+                        {getFieldDecorator('flag', {
+                            initialValue: "" + data.flag,
+                        })(
+                            <Select style={{ width: 120 }}>
+                            {
+                                flag.map((item, index) => {
+                                    return (
+                                        <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>
+                                    )
+                                })
+                            }
+                            </Select>
+                        )}
+                    </Form.Item>
+                </Form>
+            </Modal>
+    );
+  }
+);
 
 class Account extends React.Component {
     constructor(props, context) {
@@ -231,33 +294,45 @@ class Account extends React.Component {
                     })
                     return a[0][1];
                 },
-            },{
-                title: '操作',
-                key: 'id_',
-                dataIndex: 'id',
-                width: "50px",
-                render:  (text, record, index) => {
-                    return (<button type="button" className="am-btn am-btn-default am-btn-xs" 
-                                onClick={() => {
-                                    this.setState({
-                                        editRecord: Object.assign({}, record),
-                                        modalType: "edit",
-                                    })
-                                }}
-                            >
-                                <Icon type="ellipsis" />
-                            </button>)
-                },
-            }
-        ]; 
+            }]; 
         return (
             <div>
                 <div className="am-g">
-                    <div className="am-u-sm-12">
-                        <div className="am-margin-vertical">
-                            <h1> 
-                                系统 / 账户 
-                                <button className="am-fr am-btn am-btn-default am-btn-xs"
+                    <div className="am-u-sm-12 am-margin-vertical">
+                        <div className="am-g am-g-collapse">
+                            <div className="am-u-sm-2"> 
+                                <h1>系统 / 账户</h1>
+                            </div>
+                            <div className="am-u-sm-3"> 
+                                <div className="am-input-group am-input-group-default">
+                                    <input type="text" className="am-form-field" />
+                                    <span className="am-input-group-btn">
+                                        <button className="am-btn am-btn-default" type="button">
+                                            <span className="am-icon-search"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="am-fr"> 
+                                <button className="am-btn am-btn-default am-margin-left-xs"
+                                    onClick={()=>{
+                                        this.setState({
+                                            modalType: "add",
+                                        });
+                                    }}
+                                >
+                                    <Icon type="delete" />
+                                </button>
+                                <button className="am-btn am-btn-default am-margin-left-xs"
+                                    onClick={()=>{
+                                        this.setState({
+                                            modalType: "edit",
+                                        });
+                                    }}
+                                >
+                                    <Icon type="edit" />
+                                </button>
+                                <button className="am-btn am-btn-default am-margin-left-xs"
                                     onClick={()=>{
                                         this.setState({
                                             modalType: "add",
@@ -266,8 +341,11 @@ class Account extends React.Component {
                                 >
                                     <Icon type="plus" />
                                 </button>
-                            </h1>
+                            </div>
                         </div>
+                    </div>
+                    <div className="am-u-sm-12 am-margin-vertical">
+                        
                     </div>
                     <div className="am-u-sm-12">
                         <div className="content-bg">
@@ -280,6 +358,7 @@ class Account extends React.Component {
                                         console.log(selectedRows);
                                         this.setState({
                                             selectedRowKeys: selectedRowKeys,
+                                            editRecord: Object.assign({}, selectedRows[0]),
                                         })
                                     }
                                 }}
@@ -287,6 +366,7 @@ class Account extends React.Component {
                                     console.log(record);
                                     this.setState({
                                         selectedRowKeys: [index],
+                                        editRecord: Object.assign({}, record),
                                     })
                                 }}
                                 filterMultiple={false}
@@ -310,7 +390,7 @@ class Account extends React.Component {
                     </div>
                 </div>
 
-                <CollectionCreateForm
+                <NewForm
                     ref={(form) => {
                         this.newForm = form;
                     }}
@@ -322,8 +402,6 @@ class Account extends React.Component {
                     }}
                     flag={flag}
                     title="新建账号"
-                    opt="new"
-                    data={this.state.addRecord}
                     confirmLoading={this.state.confirmLoading}
                     onOk={() =>{
                         this.newForm.validateFields((err, values) => {
@@ -336,7 +414,7 @@ class Account extends React.Component {
                     }}
                 />
 
-                <CollectionCreateForm
+                <EditForm
                     ref={(form) => {
                         this.editForm = form;
                     }}
@@ -348,7 +426,6 @@ class Account extends React.Component {
                     }}
                     flag={flag}
                     title="修改账号信息"
-                    opt="edit"
                     confirmLoading={this.state.confirmLoading}
                     data={this.state.editRecord}
                     onOk={() =>{
