@@ -54,9 +54,9 @@ const NewForm = Form.create()(
                             <div className="am-u-sm-5">
                             <Form.Item>
                                 {getFieldDecorator('type', {
-                                    initialValue: "0",
+                                    initialValue: "2",
                                 })(
-                                    <Select>
+                                    <Select disabled>
                                     {
                                         type.map((item, index) => {
                                             return (
@@ -73,9 +73,9 @@ const NewForm = Form.create()(
                             <div className="am-u-sm-5">
                             <Form.Item>
                                 {getFieldDecorator('school_id', {
-                                    initialValue: "1",
+                                    initialValue: "" + user.admin.school_id,
                                 })(
-                                    <Select>
+                                    <Select disabled>
                                     {
                                         schoolList.map((item, index) => {
                                             return (
@@ -145,7 +145,7 @@ const EditForm = Form.create()(
                                 {getFieldDecorator('type', {
                                     initialValue: "" + data.type,
                                 })(
-                                    <Select>
+                                    <Select disabled>
                                     {
                                         type.map((item, index) => {
                                             return (
@@ -164,7 +164,7 @@ const EditForm = Form.create()(
                                 {getFieldDecorator('school_id', {
                                     initialValue: "" + data.school_id,
                                 })(
-                                    <Select>
+                                    <Select disabled>
                                     {
                                         schoolList.map((item, index) => {
                                             return (
@@ -184,7 +184,7 @@ const EditForm = Form.create()(
   }
 );
 
-class Account extends React.Component {
+class Teacher extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -195,7 +195,7 @@ class Account extends React.Component {
             confirmLoading: false,
             editRecord: {},
             selectedRowKeys: [],
-            schoolList: [],
+            schoolList: [{id: user.admin.school_id, name: user.admin.school_name}],
         }
     }
 
@@ -204,7 +204,6 @@ class Account extends React.Component {
 
     componentDidMount() {
         this.getList();
-        this.getSchoolList();
     }
 
     componentWillReceiveProps(nextProps){
@@ -233,6 +232,7 @@ class Account extends React.Component {
             data: Object.assign({
                 start: 0,
                 end: 50,
+                type: 2,
             }, this.props.location.query), 
             dataType: "json",
             beforeSend: function(){
@@ -254,23 +254,6 @@ class Account extends React.Component {
                 this.setState({
                     tableLoading: false,
                 });
-            }.bind(this),
-        })
-    }
-
-    getSchoolList(){
-        $.ajax({
-            url: "/api/v1/system/school",
-            type: "GET",
-            dataType: "json",
-            success: function(data){
-                if(data.ret == 0){
-                    this.setState({
-                        schoolList: data.data,
-                    });
-                }else{
-                    user.showRequestError(data)
-                }
             }.bind(this),
         })
     }
@@ -367,7 +350,7 @@ class Account extends React.Component {
     }
 
     render(){
-        const type = user.conf["system.account.type"];
+        const type = [[2, "老师"]];
         const columns = [{
                 title: 'ID',
                 key: "id",
@@ -553,7 +536,7 @@ class Account extends React.Component {
     }
 }
 
-Account.defaultProps = {
+Teacher.defaultProps = {
 }
 
-module.exports = Account
+module.exports = Teacher

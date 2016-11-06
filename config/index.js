@@ -7,7 +7,8 @@ class User{
         this.name = "";
         this.email = "";
         this.menus = {};
-        this.notification_num = 0;
+        this.admin = {};
+        this.conf = {};
         this.timeout = "";
     }
     
@@ -16,11 +17,14 @@ class User{
             return;
         }else{
             $.ajax({
-                url: "/api/v1/system/account",
+                url: "/api/v1/system/admin",
                 type: "GET",
                 dataType: "json",
+                async: false,
                 success: function(data){
-                }
+                    this.conf = data.data.conf;
+                    this.admin = data.data.admin;
+                }.bind(this)
             })
         }
     }

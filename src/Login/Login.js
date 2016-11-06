@@ -10,11 +10,14 @@ class Login extends React.Component {
     }
     componentDidMount(){
         switch(this.props.location.query.ret){
+            case "1":
+                user.showMsg("输入账号与密码");
+                break;
             case "2":
-                user.showMsg("密码错误");
+                user.showMsg("该邮箱地址没有注册");
                 break;
             case "3":
-                user.showMsg("该邮箱地址没有注册");
+                user.showMsg("密码错误");
                 break;
         }
     }
@@ -51,7 +54,7 @@ class Login extends React.Component {
                             cursor: "pointer",
                             color: "#33a597",
                         }}>
-                        点孵CMS
+                        CMS
                     </div>
                 </div>
                 <div style={{
@@ -71,10 +74,10 @@ class Login extends React.Component {
                         marginLeft: "-150px",
                         top: "50px",
                     }}>
-                        <form className="am-form" action="/api/system/login" method="post">
+                        <form className="am-form" action="/api/v1/system/admin" method="post">
                             <div className="am-form-group">
                                 <label>邮箱地址</label>
-                                <input type="email" className=""  placeholder="邮箱地址" name="user_name" required/>
+                                <input type="email" className=""  placeholder="邮箱地址" name="email" required/>
                             </div>
                             <div className="am-form-group">
                                 <label>密码</label>
