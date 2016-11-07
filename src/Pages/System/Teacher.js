@@ -379,10 +379,17 @@ class Teacher extends React.Component {
         return (
             <div>
                 <div className="am-g">
+                    <div className="am-u-sm-12 am-margin-top">
+                        <div className="am-g am-g-collapse">
+                            <div className="am-u-sm-6"> 
+                                <h2>系统管理 / 学校教师</h2>
+                            </div>
+                        </div>
+                    </div>
                     <div className="am-u-sm-12 am-margin-vertical">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
-                                <button className="am-btn am-btn-default am-margin-left-xs"
+                                <button className="am-btn am-btn-default"
                                     onClick={()=>{
                                         this.setState({
                                             modalType: "add",

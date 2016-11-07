@@ -6,7 +6,7 @@ class User{
         this.id = -1;
         this.name = "";
         this.email = "";
-        this.menus = {};
+        this.menu = [];
         this.admin = {};
         this.conf = {};
         this.timeout = "";
@@ -18,12 +18,17 @@ class User{
         }else{
             $.ajax({
                 url: "/api/v1/system/admin",
-                type: "GET",
+                type: "OPTIONS",
                 dataType: "json",
                 async: false,
                 success: function(data){
-                    this.conf = data.data.conf;
-                    this.admin = data.data.admin;
+                    if(data.ret == 0){
+                        this.conf = data.data.conf;
+                        this.admin = data.data.admin;
+                        this.menu = data.data.menu;
+                    }else{
+                        this.showRequestError(data);
+                    }
                 }.bind(this)
             })
         }
