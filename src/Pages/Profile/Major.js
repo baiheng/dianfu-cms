@@ -136,7 +136,9 @@ class Major extends React.Component {
         $.ajax({
             url: "/api/v1/profile/major",
             type: "POST",
-            data: data,
+            data: Object.assign({
+                academy_id: this.props.location.query.academy_id
+            }, data),
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -239,7 +241,7 @@ class Major extends React.Component {
                     <div className="am-u-sm-12 am-margin-top">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
-                                <h2>档案管理 / 专业列表</h2>
+                                <h2>档案管理 / {this.props.location.query.academy_name} / 专业列表</h2>
                             </div>
                         </div>
                     </div>

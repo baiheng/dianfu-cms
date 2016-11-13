@@ -1,5 +1,5 @@
 import React from 'react'
-import { hashHistory, Link } from 'react-router'
+import { hashHistory } from 'react-router'
 import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm } from 'antd'
 import { user } from 'config'
 
@@ -17,42 +17,29 @@ const NewForm = Form.create()(
                 confirmLoading={confirmLoading}
                 maskClosable={false}
             >
-                <Form vertical>
-                    <Form.Item label="学院名字">
-                        {getFieldDecorator('name', {
-                            rules: [{ required: true, message: "不能为空" }],
-                            initialValue: "",
-                        })(
-                            <Input />
-                        )}
-                    </Form.Item>
-                </Form>
-            </Modal>
-    );
-  }
-);
-
-const EditForm = Form.create()(
-    (props) => {
-        const { visible, onCancel, onOk, form, title, confirmLoading, data} = props;
-        const { getFieldDecorator } = form;
-        return (
-            <Modal
-                visible={visible}
-                title={title}
-                onCancel={onCancel}
-                onOk={onOk}
-                confirmLoading={confirmLoading}
-                maskClosable={false}
-            >
-                <Form vertical>
-                    <Form.Item label="学院名字">
-                        {getFieldDecorator('name', {
-                            initialValue: data.name,
-                        })(
-                            <Input />
-                        )}
-                    </Form.Item>
+                <Form inline>
+                    <div className="am-g am-g-collapse">
+                        <div className="am-u-sm-6">
+                            <Form.Item label="学生名字">
+                                {getFieldDecorator('name', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "",
+                                })(
+                                    <Input />
+                                )}
+                            </Form.Item>
+                        </div>
+                        <div className="am-u-sm-6">
+                            <Form.Item label="学生名字">
+                                {getFieldDecorator('name', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "",
+                                })(
+                                    <Input />
+                                )}
+                            </Form.Item>
+                        </div>
+                    </div>
                 </Form>
             </Modal>
     );
@@ -60,7 +47,7 @@ const EditForm = Form.create()(
 );
 
 
-class Academy extends React.Component {
+class Student extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -102,7 +89,7 @@ class Academy extends React.Component {
 
     getList(){
         $.ajax({
-            url: "/api/v1/profile/academy",
+            url: "/api/v1/profile/student",
             type: "GET",
             data: Object.assign({
                 start: 0,
@@ -134,9 +121,11 @@ class Academy extends React.Component {
 
     newOpt(data){
         $.ajax({
-            url: "/api/v1/profile/academy",
+            url: "/api/v1/profile/student",
             type: "POST",
-            data: data,
+            data: Object.assign({
+                academy_id: this.props.location.query.academy_id
+            }, data),
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -163,7 +152,7 @@ class Academy extends React.Component {
 
     editOpt(data){
         $.ajax({
-            url: "/api/v1/profile/academy",
+            url: "/api/v1/profile/student",
             type: "PUT",
             data: Object.assign(this.state.editRecord, data),
             dataType: "json",
@@ -196,7 +185,7 @@ class Academy extends React.Component {
             return;
         }
         $.ajax({
-            url: "/api/v1/profile/academy",
+            url: "/api/v1/profile/student",
             type: "DELETE",
             data: this.state.editRecord,
             dataType: "json",
@@ -225,34 +214,38 @@ class Academy extends React.Component {
 
     render(){
         const columns = [{
-                title: 'ID',
-                key: "id",
-                dataIndex: 'id',
-            },{
-                title: '学院',
-                key: 'name',
+                title: '姓名',
+                key: "name",
                 dataIndex: 'name',
             },{
+                title: '学号',
+                key: 'student_number',
+                dataIndex: 'student_number',
+            },{
+                title: '学院',
+                key: 'academy_name',
+                dataIndex: 'academy_name',
+            },{
                 title: '专业',
-                key: 'major',
-                width: "100px",
-                render: (text, record) => (
-                    <Link to={{
-                        pathname: "/pages/profile/major",
-                        query: {
-                            academy_id: record.id,
-                            academy_name: record.name,
-                        }
-                    }}>查看</Link>
-                ),
-            }]; 
+                key: 'major_name',
+                dataIndex: 'major_name',
+            },{
+                title: '年级',
+                key: 'grade_name',
+                dataIndex: 'grade_name',
+            },{
+                title: '班级',
+                key: 'class_name',
+                dataIndex: 'class_name',
+            }
+            ]; 
         return (
             <div>
                 <div className="am-g">
                     <div className="am-u-sm-12 am-margin-top">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
-                                <h2>档案管理 / 学院列表</h2>
+                                <h2>档案管理 / 学生档案</h2>
                             </div>
                         </div>
                     </div>
@@ -290,7 +283,7 @@ class Academy extends React.Component {
 
                             <div className="am-u-sm-3"> 
                                 <div className="am-input-group am-input-group-default">
-                                    <input type="text" className="am-form-field" placeholder="学院名字" ref="name" />
+                                    <input type="text" className="am-form-field" placeholder="学号" ref="name" />
                                     <span className="am-input-group-btn">
                                         <button className="am-btn am-btn-default" type="button" 
                                         onClick={()=>{
@@ -299,7 +292,7 @@ class Academy extends React.Component {
                                                 if(v == ""){
                                                     delete q.like;
                                                 }else{
-                                                    q = Object.assign(q, {like: "name^" + v});
+                                                    q = Object.assign(q, {like: "student_number^" + v});
                                                 }
                                                 hashHistory.push({
                                                     pathname: this.props.location.pathname,
@@ -368,7 +361,7 @@ class Academy extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    title="新建学院"
+                    title="新建学生档案"
                     confirmLoading={this.state.confirmLoading}
                     onOk={() =>{
                         this.newForm.validateFields((err, values) => {
@@ -381,33 +374,9 @@ class Academy extends React.Component {
                     }}
                 />
 
-                <EditForm
-                    ref={(form) => {
-                        this.editForm = form;
-                    }}
-                    visible={this.state.modalType == "edit"}
-                    onCancel={()=>{
-                        this.setState({
-                            modalType: "close",
-                        });
-                    }}
-                    title="修改学院"
-                    confirmLoading={this.state.confirmLoading}
-                    data={this.state.editRecord}
-                    onOk={() =>{
-                        this.editForm.validateFields((err, values) => {
-                            if (err) {
-                                return;
-                            }
-                            this.editForm.resetFields();
-                            this.editOpt(values);
-                        });
-                    }}
-                />
-
             </div>
         )
     }
 }
  
-module.exports = Academy
+module.exports = Student
