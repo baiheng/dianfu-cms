@@ -1,6 +1,6 @@
 import React from 'react'
 import { hashHistory } from 'react-router'
-import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm } from 'antd'
+import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, DatePicker } from 'antd'
 import { user } from 'config'
 
 
@@ -8,6 +8,10 @@ const NewForm = Form.create()(
     (props) => {
         const { visible, onCancel, onOk, form, title, confirmLoading} = props;
         const { getFieldDecorator } = form;
+        const formItemLayout = {
+            labelCol: { span: 8 },
+            wrapperCol: { span: 16 },
+        };
         return (
             <Modal
                 visible={visible}
@@ -16,28 +20,51 @@ const NewForm = Form.create()(
                 onOk={onOk}
                 confirmLoading={confirmLoading}
                 maskClosable={false}
+                width="800px"
             >
                 <Form inline>
-                    <div className="am-g am-g-collapse">
-                        <div className="am-u-sm-6">
-                            <Form.Item label="学生名字">
-                                {getFieldDecorator('name', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "",
-                                })(
-                                    <Input />
-                                )}
-                            </Form.Item>
-                        </div>
-                        <div className="am-u-sm-6">
-                            <Form.Item label="学生名字">
-                                {getFieldDecorator('name', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "",
-                                })(
-                                    <Input />
-                                )}
-                            </Form.Item>
+                    <div className="container-fluid">
+                        <div className="row">
+                            <div className="col-sm-3">
+                                <Form.Item label="姓名" {...formItemLayout}>
+                                    {getFieldDecorator('name', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: "",
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </div>
+                            <div className="col-sm-3">
+                                <Form.Item label="性别">
+                                {getFieldDecorator('select', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: "-1",
+                                    })(
+                                        <Select>
+                                        {
+                                            user.conf["profile.student.sex"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </div>
+                            <div className="col-sm-3">
+                                <Form.Item label="出生" {...formItemLayout}>
+                                {getFieldDecorator('date-picker', {
+                                    rules: [
+                                        { type: 'object', required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: moment("2013-10-31", "YYYY-MM-DD"),
+                                    })(
+                                        <DatePicker />
+                                    )}
+                                </Form.Item>
+                            </div>
                         </div>
                     </div>
                 </Form>

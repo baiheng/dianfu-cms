@@ -48,7 +48,7 @@ const ProfileForm = Form.create()(React.createClass({
                             )}
                         </Form.Item>
                     </div>
-                    <div className="col-sm-3"> 
+                    <div className="col-sm-1"> 
                         <Form.Item
                             label="姓名"
                             >
