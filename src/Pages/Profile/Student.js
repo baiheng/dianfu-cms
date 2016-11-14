@@ -1,17 +1,13 @@
 import React from 'react'
 import { hashHistory } from 'react-router'
-import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, DatePicker } from 'antd'
+import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, DatePicker, Row, Col } from 'antd'
 import { user } from 'config'
 
 
 const NewForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, title, confirmLoading} = props;
+        const { visible, onCancel, onOk, form, title, confirmLoading, academy, major, getMajorList} = props;
         const { getFieldDecorator } = form;
-        const formItemLayout = {
-            labelCol: { span: 8 },
-            wrapperCol: { span: 16 },
-        };
         return (
             <Modal
                 visible={visible}
@@ -22,57 +18,505 @@ const NewForm = Form.create()(
                 maskClosable={false}
                 width="800px"
             >
-                <Form inline>
-                    <div className="container-fluid">
-                        <div className="row">
-                            <div className="col-sm-3">
-                                <Form.Item label="姓名" {...formItemLayout}>
-                                    {getFieldDecorator('name', {
-                                        rules: [{ required: true, message: "不能为空" }],
-                                        initialValue: "",
-                                    })(
-                                        <Input />
-                                    )}
-                                </Form.Item>
-                            </div>
-                            <div className="col-sm-3">
-                                <Form.Item label="性别">
-                                {getFieldDecorator('select', {
-                                    rules: [
-                                        { required: true, message: '不能为空' },
-                                    ],
+                <Form horizontal>
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <h1><small>个人信息</small></h1>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <Form.Item label="姓名">
+                                {getFieldDecorator('name', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "",
+                                })(
+                                    <Input />
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="出生">
+                            {getFieldDecorator('birthday', {
+                                rules: [
+                                    { type: 'object', required: true, message: '不能为空' },
+                                ],
+                                initialValue: moment("1990-10-31", "YYYY-MM-DD"),
+                                })(
+                                    <DatePicker allowClear={false}/>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="性别">
+                            {getFieldDecorator('sex', {
+                                rules: [
+                                    { required: true, message: '不能为空' },
+                                ],
+                                initialValue: "-1",
+                                })(
+                                    <Select>
+                                    {
+                                        user.conf["profile.student.sex"].map((item, index) => {
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="政治面貌">
+                            {getFieldDecorator('political_status', {
+                                rules: [
+                                    { required: true, message: '不能为空' },
+                                ],
+                                initialValue: "-1",
+                                })(
+                                    <Select >
+                                    {
+                                        user.conf["profile.student.political_status"].map((item, index) => {
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <Form.Item label="身份证">
+                                {getFieldDecorator('id_card_number', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "",
+                                })(
+                                    <Input />
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="民族">
+                                {getFieldDecorator('nationality', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "",
+                                })(
+                                    <Input />
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="手机号码">
+                                {getFieldDecorator('phone', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "",
+                                })(
+                                    <Input />
+                                )}
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={24}>
+                            <Form.Item label="户口所在地" >
+                                {getFieldDecorator('registered_permanent_residence', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "",
+                                })(
+                                    <Input type="textarea" autosize={{ minRows: 1, maxRows: 6 }} />
+                                )}
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <hr/>
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <h1><small>校园信息</small></h1>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <Form.Item label="学号">
+                                {getFieldDecorator('student_number', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "",
+                                })(
+                                    <Input />
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="入学日期">
+                            {getFieldDecorator('enrollment_date', {
+                                rules: [
+                                    { type: 'object', required: true, message: '不能为空' },
+                                ],
+                                initialValue: moment("2016-09-01", "YYYY-MM-DD"),
+                                })(
+                                    <DatePicker allowClear={false}/>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="学位">
+                            {getFieldDecorator('degree', {
+                                rules: [
+                                    { required: true, message: '不能为空' },
+                                ],
+                                initialValue: "-1",
+                                })(
+                                    <Select>
+                                    {
+                                        user.conf["profile.student.degree"].map((item, index) => {
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="学院">
+                            {getFieldDecorator('academy_id', {
+                                rules: [
+                                    { required: true, message: '不能为空' },
+                                ],
+                                })(
+                                    <Select onSelect={(value, option) => {getMajorList(value)}} >
+                                    {
+                                        academy.map((item, index) => {
+                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <Form.Item label="专业">
+                            {getFieldDecorator('major_id', {
+                                rules: [
+                                    { required: true, message: '不能为空' },
+                                ],
+                                })(
+                                    <Select >
+                                    {
+                                        major.map((item, index) => {
+                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="年级">
+                                {getFieldDecorator('grade_id', {
+                                    rules: [{ required: true, message: "不能为空" }],
                                     initialValue: "-1",
-                                    })(
-                                        <Select>
-                                        {
-                                            user.conf["profile.student.sex"].map((item, index) => {
-                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                            })
-                                        }
-                                        </Select>
-                                    )}
-                                </Form.Item>
-                            </div>
-                            <div className="col-sm-3">
-                                <Form.Item label="出生" {...formItemLayout}>
-                                {getFieldDecorator('date-picker', {
-                                    rules: [
-                                        { type: 'object', required: true, message: '不能为空' },
-                                    ],
-                                    initialValue: moment("2013-10-31", "YYYY-MM-DD"),
-                                    })(
-                                        <DatePicker />
-                                    )}
-                                </Form.Item>
-                            </div>
-                        </div>
-                    </div>
+                                })(
+                                    <Select >
+                                    {
+                                        user.conf["profile.student.grade_id"].map((item, index) => {
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="班级">
+                                {getFieldDecorator('class_id', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "-1",
+                                })(
+                                    <Select>
+                                    {
+                                        user.conf["profile.student.class_id"].map((item, index) => {
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                            <Form.Item label="备注" >
+                                {getFieldDecorator('remark', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "",
+                                })(
+                                    <Input type="textarea" autosize={{ minRows: 2, maxRows: 6 }} />
+                                )}
+                            </Form.Item>
+                        </Col>
+                    </Row>
                 </Form>
             </Modal>
     );
   }
 );
 
+const EditForm = Form.create()(
+    (props) => {
+        const { visible, onCancel, onOk, form, title, confirmLoading, academy, major, getMajorList, data} = props;
+        const { getFieldDecorator } = form;
+        return (
+            <Modal
+                visible={visible}
+                title={title}
+                onCancel={onCancel}
+                onOk={onOk}
+                confirmLoading={confirmLoading}
+                maskClosable={false}
+                width="800px"
+            >
+                <Form horizontal>
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <h1><small>个人信息</small></h1>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <Form.Item label="姓名">
+                                {getFieldDecorator('name', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: data.name,
+                                })(
+                                    <Input />
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="出生">
+                            {getFieldDecorator('birthday', {
+                                rules: [
+                                    { type: 'object', required: true, message: '不能为空' },
+                                ],
+                                initialValue: moment(data.birthday, "YYYY-MM-DD"),
+                                })(
+                                    <DatePicker allowClear={false}/>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="性别">
+                            {getFieldDecorator('sex', {
+                                rules: [
+                                    { required: true, message: '不能为空' },
+                                ],
+                                initialValue: "" + data.sex,
+                                })(
+                                    <Select>
+                                    {
+                                        user.conf["profile.student.sex"].map((item, index) => {
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="政治面貌">
+                            {getFieldDecorator('political_status', {
+                                rules: [
+                                    { required: true, message: '不能为空' },
+                                ],
+                                initialValue: "" + data.political_status,
+                                })(
+                                    <Select >
+                                    {
+                                        user.conf["profile.student.political_status"].map((item, index) => {
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <Form.Item label="身份证">
+                                {getFieldDecorator('id_card_number', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: data.id_card_number,
+                                })(
+                                    <Input />
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="民族">
+                                {getFieldDecorator('nationality', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: data.nationality,
+                                })(
+                                    <Input />
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="手机号码">
+                                {getFieldDecorator('phone', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: data.phone,
+                                })(
+                                    <Input />
+                                )}
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={24}>
+                            <Form.Item label="户口所在地" >
+                                {getFieldDecorator('registered_permanent_residence', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: data.registered_permanent_residence,
+                                })(
+                                    <Input type="textarea" autosize={{ minRows: 1, maxRows: 6 }} />
+                                )}
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <hr/>
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <h1><small>校园信息</small></h1>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <Form.Item label="学号">
+                                {getFieldDecorator('student_number', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: data.student_number,
+                                })(
+                                    <Input />
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="入学日期">
+                            {getFieldDecorator('enrollment_date', {
+                                rules: [
+                                    { type: 'object', required: true, message: '不能为空' },
+                                ],
+                                initialValue: moment(data.enrollment_date, "YYYY-MM-DD"),
+                                })(
+                                    <DatePicker allowClear={false}/>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="学位">
+                            {getFieldDecorator('degree', {
+                                rules: [
+                                    { required: true, message: '不能为空' },
+                                ],
+                                initialValue: "" + data.degree,
+                                })(
+                                    <Select>
+                                    {
+                                        user.conf["profile.student.degree"].map((item, index) => {
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="学院">
+                            {getFieldDecorator('academy_id', {
+                                rules: [
+                                    { required: true, message: '不能为空' },
+                                ],
+                                initialValue: "" + data.academy_id,
+                                })(
+                                    <Select onSelect={(value, option) => {getMajorList(value)}} >
+                                    {
+                                        academy.map((item, index) => {
+                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={6}>
+                            <Form.Item label="专业">
+                            {getFieldDecorator('major_id', {
+                                rules: [
+                                    { required: true, message: '不能为空' },
+                                ],
+                                initialValue: "" + data.major_id,
+                                })(
+                                    <Select >
+                                    {
+                                        major.map((item, index) => {
+                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="年级">
+                                {getFieldDecorator('grade_id', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "" + data.grade_id,
+                                })(
+                                    <Select >
+                                    {
+                                        user.conf["profile.student.grade_id"].map((item, index) => {
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="班级">
+                                {getFieldDecorator('class_id', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "" + data.class_id,
+                                })(
+                                    <Select>
+                                    {
+                                        user.conf["profile.student.class_id"].map((item, index) => {
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        })
+                                    }
+                                    </Select>
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                            <Form.Item label="备注" >
+                                {getFieldDecorator('remark', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: data.remark,
+                                })(
+                                    <Input type="textarea" autosize={{ minRows: 2, maxRows: 6 }} />
+                                )}
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </Form>
+            </Modal>
+    );
+  }
+);
 
 class Student extends React.Component {
     constructor(props, context) {
@@ -85,11 +529,14 @@ class Student extends React.Component {
             confirmLoading: false,
             editRecord: {},
             selectedRowKeys: [],
+            academy: [],
+            major: [],
         }
     }
 
     componentWillMount() {
         this.getList();
+        this.getAcademyList();
     }
 
     componentDidMount() {
@@ -112,6 +559,43 @@ class Student extends React.Component {
     }
 
     componentWillUnmount(){
+    }
+
+    getAcademyList(){
+        $.ajax({
+            url: "/api/v1/profile/academy",
+            type: "GET",
+            dataType: "json",
+            success: function(data){
+                if(data.ret == 0){
+                    this.setState({
+                        academy: data.data,
+                    });
+                }else{
+                    user.showRequestError(data)
+                }
+            }.bind(this),
+        })
+    }
+
+    getMajorList(academy_id){
+        $.ajax({
+            url: "/api/v1/profile/major",
+            type: "GET",
+            data: {
+                academy_id: academy_id,
+            },
+            dataType: "json",
+            success: function(data){
+                if(data.ret == 0){
+                    this.setState({
+                        major: data.data,
+                    });
+                }else{
+                    user.showRequestError(data)
+                }
+            }.bind(this),
+        })
     }
 
     getList(){
@@ -150,9 +634,7 @@ class Student extends React.Component {
         $.ajax({
             url: "/api/v1/profile/student",
             type: "POST",
-            data: Object.assign({
-                academy_id: this.props.location.query.academy_id
-            }, data),
+            data: data,
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -276,7 +758,7 @@ class Student extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div className="am-u-sm-12 am-margin-vertical">
+                    <div className="am-u-sm-12 am-margin-top">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
                                 <button className="am-btn am-btn-default"
@@ -294,6 +776,7 @@ class Student extends React.Component {
                                             user.showMsg("请选择编辑项");
                                             return;
                                         }
+                                        this.getMajorList(this.state.editRecord.academy_id);
                                         this.setState({
                                             modalType: "edit",
                                         });
@@ -330,6 +813,25 @@ class Student extends React.Component {
                                         </button>
                                     </span>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="am-u-sm-12 am-margin-vertical">
+                        <div className="am-g am-g-collapse">
+                            <div className="am-u-sm-12"> 
+                                搜索条件：
+                                <Select size="large" defaultValue="lucy" style={{ width: 200 }}>
+                                    <Select.Option value="jack">Jack</Select.Option>
+                                    <Select.Option value="lucy">Lucy</Select.Option>
+                                    <Select.Option value="disabled" disabled>Disabled</Select.Option>
+                                    <Select.Option value="yiminghe">Yiminghe</Select.Option>
+                                </Select>
+                                <Select size="large" defaultValue="lucy" style={{ width: 200 }}>
+                                    <Select.Option value="jack">Jack</Select.Option>
+                                    <Select.Option value="lucy">Lucy</Select.Option>
+                                    <Select.Option value="disabled" disabled>Disabled</Select.Option>
+                                    <Select.Option value="yiminghe">Yiminghe</Select.Option>
+                                </Select>
                             </div>
                         </div>
                     </div>
@@ -390,17 +892,57 @@ class Student extends React.Component {
                     }}
                     title="新建学生档案"
                     confirmLoading={this.state.confirmLoading}
+                    academy={this.state.academy}
+                    major={this.state.major}
+                    getMajorList={this.getMajorList.bind(this)}
                     onOk={() =>{
                         this.newForm.validateFields((err, values) => {
                             if (err) {
                                 return;
                             }
                             this.newForm.resetFields();
-                            this.newOpt(values);
+                            let transform = {
+                                ...values,
+                                birthday: values.birthday.format('YYYY-MM-DD'),
+                                enrollment_date: values.enrollment_date.format('YYYY-MM-DD'),
+                            };
+                            this.newOpt(transform);
                         });
                     }}
                 />
 
+                <EditForm
+                    ref={(form) => {
+                        this.editForm = form;
+                    }}
+                    visible={this.state.modalType == "edit"}
+                    onCancel={()=>{
+                        this.setState({
+                            modalType: "close",
+                        });
+                    }}
+                    title="修改学生档案"
+                    confirmLoading={this.state.confirmLoading}
+                    academy={this.state.academy}
+                    major={this.state.major}
+                    getMajorList={this.getMajorList.bind(this)}
+                    data={this.state.editRecord}
+                    onOk={() =>{
+                        this.editForm.validateFields((err, values) => {
+                            console.log(values);
+                            if (err) {
+                                return;
+                            }
+                            this.editForm.resetFields();
+                            let transform = {
+                                ...values,
+                                birthday: values.birthday.format('YYYY-MM-DD'),
+                                enrollment_date: values.enrollment_date.format('YYYY-MM-DD'),
+                            };
+                            this.editOpt(transform);
+                        });
+                    }}
+                />
             </div>
         )
     }
