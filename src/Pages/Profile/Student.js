@@ -1,6 +1,6 @@
 import React from 'react'
 import { hashHistory } from 'react-router'
-import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, DatePicker, Row, Col } from 'antd'
+import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, DatePicker, Row, Col, Upload } from 'antd'
 import { user } from 'config'
 
 
@@ -112,6 +112,16 @@ const NewForm = Form.create()(
                                     initialValue: "",
                                 })(
                                     <Input />
+                                )}
+                            </Form.Item>
+                        </Col>
+                        <Col span={6}>
+                            <Form.Item label="密码">
+                                {getFieldDecorator('password', {
+                                    rules: [{ required: true, message: "不能为空" }],
+                                    initialValue: "",
+                                })(
+                                    <Input type="password" />
                                 )}
                             </Form.Item>
                         </Col>
@@ -371,6 +381,15 @@ const EditForm = Form.create()(
                                 )}
                             </Form.Item>
                         </Col>
+                        <Col span={6}>
+                            <Form.Item label="密码">
+                                {getFieldDecorator('password', {
+                                    initialValue: data.password,
+                                })(
+                                    <Input type="password" placeholder="重设密码"/>
+                                )}
+                            </Form.Item>
+                        </Col>
                     </Row>
                     <Row>
                         <Col span={24}>
@@ -518,6 +537,58 @@ const EditForm = Form.create()(
   }
 );
 
+const QuickImportForm = Form.create()(
+    (props) => {
+        const { visible, onCancel, onOk, form, title, confirmLoading} = props;
+        const { getFieldDecorator } = form;
+
+        const uploadProps = {
+            name: 'file',
+            action: '/upload.do',
+            headers: {
+                authorization: 'authorization-text',
+            },
+            onChange(info) {
+                if (info.file.status !== 'uploading') {
+                    console.log(info.file, info.fileList);
+                }
+                if (info.file.status === 'done') {
+                    console.log(info.file, info.fileList);
+                }else if(info.file.status === 'error') {
+                    console.log(info.file, info.fileList);
+                }
+            },
+        };
+
+        return (
+            <Modal
+                visible={visible}
+                title={title}
+                onCancel={onCancel}
+                onOk={onOk}
+                confirmLoading={confirmLoading}
+                maskClosable={false}
+                width="300px"
+            >
+                <div className="am-g">
+                    <div className="am-u-sm-12">
+                        <Upload {...uploadProps}>
+                            <Button type="ghost">
+                                <Icon type="upload" /> 上传学生档案.excel
+                            </Button>
+                        </Upload>
+                    </div>
+
+                    <div className="am-u-sm-12 am-margin-top">
+                        <a className="am-margin-top">下载学生档案模板</a>
+                    </div>
+                </div>
+            </Modal>
+    );
+  }
+);
+
+
 class Student extends React.Component {
     constructor(props, context) {
         super(props, context);
@@ -531,6 +602,10 @@ class Student extends React.Component {
             selectedRowKeys: [],
             academy: [],
             major: [],
+            selectedAcademy: "-1",
+            selectedMajor: "-1",
+            selectedGrade: "-1",
+            selectedClass: "-1",
         }
     }
 
@@ -764,6 +839,15 @@ class Student extends React.Component {
                                 <button className="am-btn am-btn-default"
                                     onClick={()=>{
                                         this.setState({
+                                            modalType: "quickImport",
+                                        });
+                                    }}
+                                >
+                                    快速导入
+                                </button>
+                                <button className="am-btn am-btn-default am-margin-left-xs"
+                                    onClick={()=>{
+                                        this.setState({
                                             modalType: "add",
                                         });
                                     }}
@@ -819,19 +903,94 @@ class Student extends React.Component {
                     <div className="am-u-sm-12 am-margin-vertical">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-12"> 
-                                搜索条件：
-                                <Select size="large" defaultValue="lucy" style={{ width: 200 }}>
-                                    <Select.Option value="jack">Jack</Select.Option>
-                                    <Select.Option value="lucy">Lucy</Select.Option>
-                                    <Select.Option value="disabled" disabled>Disabled</Select.Option>
-                                    <Select.Option value="yiminghe">Yiminghe</Select.Option>
+                                <Select size="large" value={this.state.selectedAcademy} 
+                                    style={{ width: 150 }} className="am-margin-right-xs" 
+                                    onChange={(value) => {
+                                        this.getMajorList(value);
+                                        this.setState({
+                                            selectedAcademy: value
+                                        })
+                                    }}>
+                                    <Select.Option value={"-1"} key={-1}>选择学院</Select.Option>
+                                    {
+                                        this.state.academy.map((item, index) => {
+                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                        })
+                                    }
                                 </Select>
-                                <Select size="large" defaultValue="lucy" style={{ width: 200 }}>
-                                    <Select.Option value="jack">Jack</Select.Option>
-                                    <Select.Option value="lucy">Lucy</Select.Option>
-                                    <Select.Option value="disabled" disabled>Disabled</Select.Option>
-                                    <Select.Option value="yiminghe">Yiminghe</Select.Option>
+                                <Select size="large" value={this.state.selectedMajor} 
+                                    style={{ width: 150 }} className="am-margin-right-xs" 
+                                    onChange={(value) => {
+                                        this.setState({
+                                            selectedMajor: value
+                                        })
+                                    }}>
+                                    <Select.Option value={"-1"} key={-1}>选择专业</Select.Option>
+                                    {
+                                        this.state.major.map((item, index) => {
+                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                        })
+                                    }
                                 </Select>
+                                <Select size="large" value={this.state.selectedGrade} 
+                                    style={{ width: 150 }} className="am-margin-right-xs" 
+                                    onChange={(value) => {
+                                        this.setState({
+                                            selectedGrade: value
+                                        })
+                                    }}>
+                                    {
+                                        user.conf["profile.student.grade_id"].map((item, index) => {
+                                            if(item[0] == -1){
+                                                return <Select.Option value={"-1"} key={-1}>选择年级</Select.Option>;
+                                            }else{
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            }
+                                        })
+                                    }
+                                </Select>
+                                <Select size="large" value={this.state.selectedClass} 
+                                    style={{ width: 150 }} className="am-margin-right-xs" 
+                                    onChange={(value) => {
+                                        this.setState({
+                                            selectedClass: value
+                                        })
+                                    }}>
+                                    {
+                                        user.conf["profile.student.class_id"].map((item, index) => {
+                                            if(item[0] == -1){
+                                                return <Select.Option value={"-1"} key={-1}>选择班级</Select.Option>;
+                                            }else{
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            }
+                                        })
+                                    }
+                                </Select>
+                                <Button type="ghost" size="large" onClick={()=>{
+                                    let q = Object.assign({}, this.props.location.query);
+                                    q = Object.assign(q, {
+                                        class_id: this.state.selectedClass,
+                                        grade_id: this.state.selectedGrade,
+                                        major_id: this.state.selectedMajor,
+                                        academy_id: this.state.selectedAcademy
+                                    });
+                                    if(this.state.selectedClass == "-1"){
+                                        delete q.class_id;
+                                    };
+                                    if(this.state.selectedGrade == "-1"){
+                                        delete q.grade_id;
+                                    };
+                                    if(this.state.selectedMajor == "-1"){
+                                        delete q.major_id;
+                                    };
+                                    if(this.state.selectedAcademy == "-1"){
+                                        delete q.academy_id;
+                                    };
+                                    hashHistory.push({
+                                        pathname: this.props.location.pathname,
+                                        query: q, 
+                                    });
+                                }}>搜索</Button>
                             </div>
                         </div>
                     </div>
@@ -879,6 +1038,28 @@ class Student extends React.Component {
                         </div>
                     </div>
                 </div>
+
+                <QuickImportForm
+                    ref={(form) => {
+                        this.quickImportForm = form;
+                    }}
+                    visible={this.state.modalType == "quickImport"}
+                    onCancel={()=>{
+                        this.setState({
+                            modalType: "close",
+                        });
+                    }}
+                    title="快速导入学生档案"
+                    onOk={() =>{
+                        this.quickImportForm.validateFields((err, values) => {
+                            if (err) {
+                                return;
+                            }
+                            this.quickImportForm.resetFields();
+                            // this.newOpt(transform);
+                        });
+                    }}
+                />
 
                 <NewForm
                     ref={(form) => {
