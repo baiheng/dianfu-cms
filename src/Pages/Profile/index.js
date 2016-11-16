@@ -14,9 +14,5 @@ module.exports = {
             path: 'student',
             component: require("./Student"), 
         },
-        {
-            path: 'student_new',
-            component: require("./StudentNew"), 
-        },
     ],
 }
