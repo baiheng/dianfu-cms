@@ -115,16 +115,6 @@ const NewForm = Form.create()(
                                 )}
                             </Form.Item>
                         </Col>
-                        <Col span={6}>
-                            <Form.Item label="密码">
-                                {getFieldDecorator('password', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "",
-                                })(
-                                    <Input type="password" />
-                                )}
-                            </Form.Item>
-                        </Col>
                     </Row>
                     <Row>
                         <Col span={24}>
@@ -544,7 +534,7 @@ const QuickImportForm = Form.create()(
 
         const uploadProps = {
             name: 'file',
-            action: '/upload.do',
+            action: '/api/v1/profile/student_quick_import',
             headers: {
                 authorization: 'authorization-text',
             },
@@ -580,7 +570,7 @@ const QuickImportForm = Form.create()(
                     </div>
 
                     <div className="am-u-sm-12 am-margin-top">
-                        <a className="am-margin-top">下载学生档案模板</a>
+                        <a className="am-margin-top" href="/api/v1/profile/student_quick_import">下载学生档案模板</a>
                     </div>
                 </div>
             </Modal>
