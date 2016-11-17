@@ -538,14 +538,11 @@ const QuickImportForm = Form.create()(
             headers: {
                 authorization: 'authorization-text',
             },
+            fileList: [],
             onChange(info) {
-                if (info.file.status !== 'uploading') {
-                    console.log(info.file, info.fileList);
-                }
-                if (info.file.status === 'done') {
-                    console.log(info.file, info.fileList);
-                }else if(info.file.status === 'error') {
-                    console.log(info.file, info.fileList);
+                    console.log(info.file.status)
+                if(info.file.status === 'done'){
+                    console.log(info)
                 }
             },
         };
@@ -559,9 +556,10 @@ const QuickImportForm = Form.create()(
                 confirmLoading={confirmLoading}
                 maskClosable={false}
                 width="300px"
+                footer={""}
             >
                 <div className="am-g">
-                    <div className="am-u-sm-12">
+                    <div className="am-u-sm-12" style={{textAlign: "center"}}>
                         <Upload {...uploadProps}>
                             <Button type="ghost">
                                 <Icon type="upload" /> 上传学生档案.excel
@@ -569,7 +567,7 @@ const QuickImportForm = Form.create()(
                         </Upload>
                     </div>
 
-                    <div className="am-u-sm-12 am-margin-top">
+                    <div className="am-u-sm-12 am-margin-top" style={{textAlign: "center"}}>
                         <a className="am-margin-top" href="/api/v1/profile/student_quick_import">下载学生档案模板</a>
                     </div>
                 </div>
