@@ -726,7 +726,9 @@ class Student extends React.Component {
         $.ajax({
             url: "/api/v1/profile/student",
             type: "PUT",
-            data: Object.assign(this.state.editRecord, data),
+            data: JSON.stringify(
+                Object.assign(this.state.editRecord, data)
+                ),
             dataType: "json",
             beforeSend: function(){
                 this.setState({
