@@ -10,6 +10,7 @@ module.exports = {
             cb(null, [
                 require('./System'),
                 require('./Profile'),
+                require('./Curriculum'),
             ])
         })
     },

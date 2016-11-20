@@ -3,14 +3,6 @@ module.exports = {
 
     childRoutes: [
         {
-            path: 'academy',
-            component: require("./Academy"), 
-        },
-        {
-            path: 'major',
-            component: require("./Major"), 
-        },
-        {
             path: 'student',
             component: require("./Student"), 
         },

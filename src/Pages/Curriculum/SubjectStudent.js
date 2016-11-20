@@ -18,7 +18,7 @@ const NewForm = Form.create()(
                 maskClosable={false}
             >
                 <Form vertical>
-                    <Form.Item label="专业名字">
+                    <Form.Item label="学生名字">
                         {getFieldDecorator('name', {
                             rules: [{ required: true, message: "不能为空" }],
                             initialValue: "",
@@ -46,7 +46,7 @@ const EditForm = Form.create()(
                 maskClosable={false}
             >
                 <Form vertical>
-                    <Form.Item label="专业名字">
+                    <Form.Item label="学生名字">
                         {getFieldDecorator('name', {
                             initialValue: data.name,
                         })(
@@ -60,7 +60,7 @@ const EditForm = Form.create()(
 );
 
 
-class Major extends React.Component {
+class SubjectStudent extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -102,7 +102,7 @@ class Major extends React.Component {
 
     getList(){
         $.ajax({
-            url: "/api/v1/profile/major",
+            url: "/api/v1/curriculum/subject_student",
             type: "GET",
             data: Object.assign({
                 start: 0,
@@ -134,7 +134,7 @@ class Major extends React.Component {
 
     newOpt(data){
         $.ajax({
-            url: "/api/v1/profile/major",
+            url: "/api/v1/curriculum/subject_student",
             type: "POST",
             data: Object.assign({
                 academy_id: this.props.location.query.academy_id
@@ -165,7 +165,7 @@ class Major extends React.Component {
 
     editOpt(data){
         $.ajax({
-            url: "/api/v1/profile/major",
+            url: "/api/v1/curriculum/subject_student",
             type: "PUT",
             data: Object.assign(this.state.editRecord, data),
             dataType: "json",
@@ -198,7 +198,7 @@ class Major extends React.Component {
             return;
         }
         $.ajax({
-            url: "/api/v1/profile/major",
+            url: "/api/v1/curriculum/subject_student",
             type: "DELETE",
             data: this.state.editRecord,
             dataType: "json",
@@ -226,22 +226,45 @@ class Major extends React.Component {
     }
 
     render(){
-        const columns = [{
-                title: 'ID',
-                key: "id",
-                dataIndex: 'id',
-            },{
+        const columns = [
+            {
+                title: '学号',
+                key: "student_number",
+                dataIndex: 'student_number',
+            },
+            {
+                title: '学院',
+                key: 'academy_name',
+                dataIndex: 'academy_name',
+            },
+            {
                 title: '专业',
-                key: 'name',
-                dataIndex: 'name',
-            }]; 
+                key: 'major_name',
+                dataIndex: 'major_name',
+            },
+            {
+                title: '年级',
+                key: 'grade_name',
+                dataIndex: 'grade_name',
+            },
+            {
+                title: '班级',
+                key: 'class_name',
+                dataIndex: 'class_name',
+            },
+            {
+                title: '学生',
+                key: 'student_name',
+                dataIndex: 'student_name',
+            }
+            ]; 
         return (
             <div>
                 <div className="am-g">
                     <div className="am-u-sm-12 am-margin-top">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
-                                <h2>档案管理 / {this.props.location.query.academy_name} / 专业列表</h2>
+                                <h2>课表 / {this.props.location.query.course_name} / 学生列表</h2>
                             </div>
                         </div>
                     </div>
@@ -279,7 +302,7 @@ class Major extends React.Component {
 
                             <div className="am-u-sm-3"> 
                                 <div className="am-input-group am-input-group-default">
-                                    <input type="text" className="am-form-field" placeholder="专业名字" ref="name" />
+                                    <input type="text" className="am-form-field" placeholder="学生名字" ref="name" />
                                     <span className="am-input-group-btn">
                                         <button className="am-btn am-btn-default" type="button" 
                                         onClick={()=>{
@@ -357,7 +380,7 @@ class Major extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    title="新建专业"
+                    title="新建学生"
                     confirmLoading={this.state.confirmLoading}
                     onOk={() =>{
                         this.newForm.validateFields((err, values) => {
@@ -380,7 +403,7 @@ class Major extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    title="修改专业"
+                    title="修改学生"
                     confirmLoading={this.state.confirmLoading}
                     data={this.state.editRecord}
                     onOk={() =>{
@@ -399,4 +422,4 @@ class Major extends React.Component {
     }
 }
  
-module.exports = Major
+module.exports = SubjectStudent

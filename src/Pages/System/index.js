@@ -18,5 +18,13 @@ module.exports = {
             path: 'teacher',
             component: require("./Teacher"), 
         },
+        {
+            path: 'academy',
+            component: require("./Academy"), 
+        },
+        {
+            path: 'major',
+            component: require("./Major"), 
+        },
     ],
 }

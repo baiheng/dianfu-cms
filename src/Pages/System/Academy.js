@@ -1,12 +1,12 @@
 import React from 'react'
-import { hashHistory } from 'react-router'
+import { hashHistory, Link } from 'react-router'
 import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm } from 'antd'
 import { user } from 'config'
 
 
 const NewForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, type, schoolList, title, confirmLoading} = props;
+        const { visible, onCancel, onOk, form, title, confirmLoading} = props;
         const { getFieldDecorator } = form;
         return (
             <Modal
@@ -18,32 +18,9 @@ const NewForm = Form.create()(
                 maskClosable={false}
             >
                 <Form vertical>
-                    <Form.Item label="登录邮箱">
-                        {getFieldDecorator('email', {
-                            rules: [{ required: true, message: "不能为空" }],
-                            initialValue: "",
-                        })(
-                            <Input />
-                        )}
-                    </Form.Item>
-                    <Form.Item label="登录密码">
-                        {getFieldDecorator('password', {
-                            rules: [{ required: true, message: "不能为空" }],
-                            initialValue: "",
-                        })(
-                            <Input type="password"  />
-                        )}
-                    </Form.Item>
-                    <Form.Item label="真实姓名">
+                    <Form.Item label="学院名字">
                         {getFieldDecorator('name', {
                             rules: [{ required: true, message: "不能为空" }],
-                            initialValue: "",
-                        })(
-                            <Input />
-                        )}
-                    </Form.Item>
-                    <Form.Item label="手机号码">
-                        {getFieldDecorator('phone', {
                             initialValue: "",
                         })(
                             <Input />
@@ -57,7 +34,7 @@ const NewForm = Form.create()(
 
 const EditForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, type, title, schoolList, confirmLoading, data} = props;
+        const { visible, onCancel, onOk, form, title, confirmLoading, data} = props;
         const { getFieldDecorator } = form;
         return (
             <Modal
@@ -69,31 +46,9 @@ const EditForm = Form.create()(
                 maskClosable={false}
             >
                 <Form vertical>
-                    <Form.Item label="登录邮箱">
-                        {getFieldDecorator('email', {
-                            initialValue: data.email,
-                        })(
-                            <Input disabled />
-                        )}
-                    </Form.Item>
-                    <Form.Item label="登录密码">
-                        {getFieldDecorator('password', {
-                            initialValue: data.password,
-                        })(
-                            <Input type="password" placeholder="重置新密码才填" />
-                        )}
-                    </Form.Item>
-                    <Form.Item label="真实姓名">
+                    <Form.Item label="学院名字">
                         {getFieldDecorator('name', {
-                            rules: [{ required: true, message: "不能为空" }],
                             initialValue: data.name,
-                        })(
-                            <Input />
-                        )}
-                    </Form.Item>
-                    <Form.Item label="手机号码">
-                        {getFieldDecorator('phone', {
-                            initialValue: data.phone,
                         })(
                             <Input />
                         )}
@@ -104,7 +59,8 @@ const EditForm = Form.create()(
   }
 );
 
-class Teacher extends React.Component {
+
+class Academy extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -119,10 +75,10 @@ class Teacher extends React.Component {
     }
 
     componentWillMount() {
+        this.getList();
     }
 
     componentDidMount() {
-        this.getList();
     }
 
     componentWillReceiveProps(nextProps){
@@ -146,12 +102,11 @@ class Teacher extends React.Component {
 
     getList(){
         $.ajax({
-            url: "/api/v1/system/account",
+            url: "/api/v1/system/academy",
             type: "GET",
             data: Object.assign({
                 start: 0,
-                end: 50,
-                type: 2,
+                end: 50
             }, this.props.location.query), 
             dataType: "json",
             beforeSend: function(){
@@ -163,7 +118,7 @@ class Teacher extends React.Component {
                 if(data.ret == 0){
                     this.setState({
                         list: data.data.list,
-                        total: data.data.total,
+                        total: data.data.count,
                     });
                 }else{
                     user.showRequestError(data)
@@ -179,12 +134,9 @@ class Teacher extends React.Component {
 
     newOpt(data){
         $.ajax({
-            url: "/api/v1/system/account",
+            url: "/api/v1/system/academy",
             type: "POST",
-            data: Object.assign(data, {
-                type: 2,
-                school_id: user.admin.school_id,
-            }),
+            data: data,
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -211,7 +163,7 @@ class Teacher extends React.Component {
 
     editOpt(data){
         $.ajax({
-            url: "/api/v1/system/account",
+            url: "/api/v1/system/academy",
             type: "PUT",
             data: Object.assign(this.state.editRecord, data),
             dataType: "json",
@@ -244,7 +196,7 @@ class Teacher extends React.Component {
             return;
         }
         $.ajax({
-            url: "/api/v1/system/account",
+            url: "/api/v1/system/academy",
             type: "DELETE",
             data: this.state.editRecord,
             dataType: "json",
@@ -277,25 +229,22 @@ class Teacher extends React.Component {
                 key: "id",
                 dataIndex: 'id',
             },{
-                title: '邮箱',
-                key: 'email',
-                dataIndex: 'email',
-            },{
-                title: '姓名',
+                title: '学院',
                 key: 'name',
                 dataIndex: 'name',
             },{
-                title: '电话',
-                key: 'phone',
-                dataIndex: 'phone',
-            },{
-                title: '学校',
-                key: 'school_name',
-                dataIndex: 'school_name',
-            },{
-                title: '类型',
-                key: 'type_name',
-                dataIndex: 'type_name',
+                title: '专业',
+                key: 'major',
+                width: "100px",
+                render: (text, record) => (
+                    <Link to={{
+                        pathname: "/pages/system/major",
+                        query: {
+                            academy_id: record.id,
+                            academy_name: record.name,
+                        }
+                    }}>查看</Link>
+                ),
             }]; 
         return (
             <div>
@@ -303,7 +252,7 @@ class Teacher extends React.Component {
                     <div className="am-u-sm-12 am-margin-top">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
-                                <h2>系统管理 / 学校教师</h2>
+                                <h2>系统管理 / 学院列表</h2>
                             </div>
                         </div>
                     </div>
@@ -338,9 +287,10 @@ class Teacher extends React.Component {
                                     </button>
                                 </Popconfirm>
                             </div>
+
                             <div className="am-u-sm-3"> 
                                 <div className="am-input-group am-input-group-default">
-                                    <input type="text" className="am-form-field" placeholder="名字" ref="name" />
+                                    <input type="text" className="am-form-field" placeholder="学院名字" ref="name" />
                                     <span className="am-input-group-btn">
                                         <button className="am-btn am-btn-default" type="button" 
                                         onClick={()=>{
@@ -418,7 +368,7 @@ class Teacher extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    title="新建账号"
+                    title="新建学院"
                     confirmLoading={this.state.confirmLoading}
                     onOk={() =>{
                         this.newForm.validateFields((err, values) => {
@@ -441,7 +391,7 @@ class Teacher extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    title="修改账号信息"
+                    title="修改学院"
                     confirmLoading={this.state.confirmLoading}
                     data={this.state.editRecord}
                     onOk={() =>{
@@ -459,8 +409,5 @@ class Teacher extends React.Component {
         )
     }
 }
-
-Teacher.defaultProps = {
-}
-
-module.exports = Teacher
+ 
+module.exports = Academy

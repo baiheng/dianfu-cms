@@ -18,243 +18,248 @@ const NewForm = Form.create()(
                 maskClosable={false}
                 width="800px"
             >
-                <Form horizontal>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <h1><small>个人信息</small></h1>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <Form.Item label="姓名">
-                                {getFieldDecorator('name', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "",
-                                })(
-                                    <Input />
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="出生">
-                            {getFieldDecorator('birthday', {
-                                rules: [
-                                    { type: 'object', required: true, message: '不能为空' },
-                                ],
-                                initialValue: moment("1990-10-31", "YYYY-MM-DD"),
-                                })(
-                                    <DatePicker allowClear={false}/>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="性别">
-                            {getFieldDecorator('sex', {
-                                rules: [
-                                    { required: true, message: '不能为空' },
-                                ],
-                                initialValue: "-1",
-                                })(
-                                    <Select>
-                                    {
-                                        user.conf["profile.student.sex"].map((item, index) => {
-                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="政治面貌">
-                            {getFieldDecorator('political_status', {
-                                rules: [
-                                    { required: true, message: '不能为空' },
-                                ],
-                                initialValue: "-1",
-                                })(
-                                    <Select >
-                                    {
-                                        user.conf["profile.student.political_status"].map((item, index) => {
-                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <Form.Item label="身份证">
-                                {getFieldDecorator('id_card_number', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "",
-                                })(
-                                    <Input />
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="民族">
-                                {getFieldDecorator('nationality', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "",
-                                })(
-                                    <Input />
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="手机号码">
-                                {getFieldDecorator('phone', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "",
-                                })(
-                                    <Input />
-                                )}
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={24}>
-                            <Form.Item label="户口所在地" >
-                                {getFieldDecorator('registered_permanent_residence', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "",
-                                })(
-                                    <Input type="textarea" autosize={{ minRows: 1, maxRows: 6 }} />
-                                )}
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <hr/>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <h1><small>校园信息</small></h1>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <Form.Item label="学号">
-                                {getFieldDecorator('student_number', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "",
-                                })(
-                                    <Input />
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="入学日期">
-                            {getFieldDecorator('enrollment_date', {
-                                rules: [
-                                    { type: 'object', required: true, message: '不能为空' },
-                                ],
-                                initialValue: moment("2016-09-01", "YYYY-MM-DD"),
-                                })(
-                                    <DatePicker allowClear={false}/>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="学位">
-                            {getFieldDecorator('degree', {
-                                rules: [
-                                    { required: true, message: '不能为空' },
-                                ],
-                                initialValue: "-1",
-                                })(
-                                    <Select>
-                                    {
-                                        user.conf["profile.student.degree"].map((item, index) => {
-                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="学院">
-                            {getFieldDecorator('academy_id', {
-                                rules: [
-                                    { required: true, message: '不能为空' },
-                                ],
-                                })(
-                                    <Select onSelect={(value, option) => {getMajorList(value)}} >
-                                    {
-                                        academy.map((item, index) => {
-                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <Form.Item label="专业">
-                            {getFieldDecorator('major_id', {
-                                rules: [
-                                    { required: true, message: '不能为空' },
-                                ],
-                                })(
-                                    <Select >
-                                    {
-                                        major.map((item, index) => {
-                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="年级">
-                                {getFieldDecorator('grade_id', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "-1",
-                                })(
-                                    <Select >
-                                    {
-                                        user.conf["profile.student.grade_id"].map((item, index) => {
-                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="班级">
-                                {getFieldDecorator('class_id', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "-1",
-                                })(
-                                    <Select>
-                                    {
-                                        user.conf["profile.student.class_id"].map((item, index) => {
-                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={24}>
-                            <Form.Item label="备注" >
-                                {getFieldDecorator('remark', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "",
-                                })(
-                                    <Input type="textarea" autosize={{ minRows: 2, maxRows: 6 }} />
-                                )}
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                </Form>
+                <div id="new-form-area">
+                    <Form horizontal>
+                        <Row gutter={16}>
+                            <Col span={6}>
+                                <h1><small>个人信息</small></h1>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={6}>
+                                <Form.Item label="姓名">
+                                    {getFieldDecorator('name', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: "",
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="出生">
+                                {getFieldDecorator('birthday', {
+                                    rules: [
+                                        { type: 'object', required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: moment("1990-10-31", "YYYY-MM-DD"),
+                                    })(
+                                        <DatePicker allowClear={false}
+                                            getCalendarContainer={() => document.getElementById('new-form-area')}/>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="性别">
+                                {getFieldDecorator('sex', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    })(
+                                        <Select  placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('new-form-area')}>
+                                        {
+                                            user.conf["profile.student.sex"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="政治面貌">
+                                {getFieldDecorator('political_status', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    })(
+                                        <Select  placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('new-form-area')}>
+                                        {
+                                            user.conf["profile.student.political_status"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={6}>
+                                <Form.Item label="身份证">
+                                    {getFieldDecorator('id_card_number', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: "",
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="民族">
+                                    {getFieldDecorator('nationality', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: "",
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="手机号码">
+                                    {getFieldDecorator('phone', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: "",
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={24}>
+                                <Form.Item label="户口所在地" >
+                                    {getFieldDecorator('registered_permanent_residence', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: "",
+                                    })(
+                                        <Input type="textarea" autosize={{ minRows: 1, maxRows: 6 }} />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <hr/>
+                        <Row gutter={16}>
+                            <Col span={6}>
+                                <h1><small>校园信息</small></h1>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={6}>
+                                <Form.Item label="学号">
+                                    {getFieldDecorator('student_number', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: "",
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="入学日期">
+                                {getFieldDecorator('enrollment_date', {
+                                    rules: [
+                                        { type: 'object', required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: moment("2016-09-01", "YYYY-MM-DD"),
+                                    })(
+                                        <DatePicker allowClear={false} 
+                                            getCalendarContainer={() => document.getElementById('new-form-area')}/>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="学位">
+                                {getFieldDecorator('degree', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    })(
+                                        <Select  placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('new-form-area')}>
+                                        {
+                                            user.conf["profile.student.degree"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="学院">
+                                {getFieldDecorator('academy_id', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    })(
+                                        <Select onSelect={(value, option) => {getMajorList(value)}} placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('new-form-area')}>
+                                        {
+                                            academy.map((item, index) => {
+                                                return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={6}>
+                                <Form.Item label="专业">
+                                {getFieldDecorator('major_id', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    })(
+                                        <Select  placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('new-form-area')}>
+                                        {
+                                            major.map((item, index) => {
+                                                return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="年级">
+                                    {getFieldDecorator('grade_id', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                    })(
+                                        <Select  placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('new-form-area')}>
+                                        {
+                                            user.conf["profile.student.grade_id"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="班级">
+                                    {getFieldDecorator('class_id', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                    })(
+                                        <Select  placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('new-form-area')}>
+                                        {
+                                            user.conf["profile.student.class_id"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={24}>
+                                <Form.Item label="备注" >
+                                    {getFieldDecorator('remark', {
+                                        initialValue: "",
+                                    })(
+                                        <Input type="textarea" autosize={{ minRows: 2, maxRows: 6 }} />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                    </Form>
+                </div>
             </Modal>
     );
   }
@@ -274,254 +279,265 @@ const EditForm = Form.create()(
                 maskClosable={false}
                 width="800px"
             >
-                <Form horizontal>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <h1><small>个人信息</small></h1>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <Form.Item label="姓名">
-                                {getFieldDecorator('name', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: data.name,
-                                })(
-                                    <Input />
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="出生">
-                            {getFieldDecorator('birthday', {
-                                rules: [
-                                    { type: 'object', required: true, message: '不能为空' },
-                                ],
-                                initialValue: moment(data.birthday, "YYYY-MM-DD"),
-                                })(
-                                    <DatePicker allowClear={false}/>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="性别">
-                            {getFieldDecorator('sex', {
-                                rules: [
-                                    { required: true, message: '不能为空' },
-                                ],
-                                initialValue: "" + data.sex,
-                                })(
-                                    <Select>
-                                    {
-                                        user.conf["profile.student.sex"].map((item, index) => {
-                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="政治面貌">
-                            {getFieldDecorator('political_status', {
-                                rules: [
-                                    { required: true, message: '不能为空' },
-                                ],
-                                initialValue: "" + data.political_status,
-                                })(
-                                    <Select >
-                                    {
-                                        user.conf["profile.student.political_status"].map((item, index) => {
-                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <Form.Item label="身份证">
-                                {getFieldDecorator('id_card_number', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: data.id_card_number,
-                                })(
-                                    <Input />
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="民族">
-                                {getFieldDecorator('nationality', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: data.nationality,
-                                })(
-                                    <Input />
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="手机号码">
-                                {getFieldDecorator('phone', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: data.phone,
-                                })(
-                                    <Input />
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="密码">
-                                {getFieldDecorator('password', {
-                                    initialValue: data.password,
-                                })(
-                                    <Input type="password" placeholder="重设密码"/>
-                                )}
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={24}>
-                            <Form.Item label="户口所在地" >
-                                {getFieldDecorator('registered_permanent_residence', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: data.registered_permanent_residence,
-                                })(
-                                    <Input type="textarea" autosize={{ minRows: 1, maxRows: 6 }} />
-                                )}
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <hr/>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <h1><small>校园信息</small></h1>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <Form.Item label="学号">
-                                {getFieldDecorator('student_number', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: data.student_number,
-                                })(
-                                    <Input />
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="入学日期">
-                            {getFieldDecorator('enrollment_date', {
-                                rules: [
-                                    { type: 'object', required: true, message: '不能为空' },
-                                ],
-                                initialValue: moment(data.enrollment_date, "YYYY-MM-DD"),
-                                })(
-                                    <DatePicker allowClear={false}/>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="学位">
-                            {getFieldDecorator('degree', {
-                                rules: [
-                                    { required: true, message: '不能为空' },
-                                ],
-                                initialValue: "" + data.degree,
-                                })(
-                                    <Select>
-                                    {
-                                        user.conf["profile.student.degree"].map((item, index) => {
-                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="学院">
-                            {getFieldDecorator('academy_id', {
-                                rules: [
-                                    { required: true, message: '不能为空' },
-                                ],
-                                initialValue: "" + data.academy_id,
-                                })(
-                                    <Select onSelect={(value, option) => {getMajorList(value)}} >
-                                    {
-                                        academy.map((item, index) => {
-                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row gutter={16}>
-                        <Col span={6}>
-                            <Form.Item label="专业">
-                            {getFieldDecorator('major_id', {
-                                rules: [
-                                    { required: true, message: '不能为空' },
-                                ],
-                                initialValue: "" + data.major_id,
-                                })(
-                                    <Select >
-                                    {
-                                        major.map((item, index) => {
-                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="年级">
-                                {getFieldDecorator('grade_id', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "" + data.grade_id,
-                                })(
-                                    <Select >
-                                    {
-                                        user.conf["profile.student.grade_id"].map((item, index) => {
-                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={6}>
-                            <Form.Item label="班级">
-                                {getFieldDecorator('class_id', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: "" + data.class_id,
-                                })(
-                                    <Select>
-                                    {
-                                        user.conf["profile.student.class_id"].map((item, index) => {
-                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                        </Col>
-                        <Col span={24}>
-                            <Form.Item label="备注" >
-                                {getFieldDecorator('remark', {
-                                    rules: [{ required: true, message: "不能为空" }],
-                                    initialValue: data.remark,
-                                })(
-                                    <Input type="textarea" autosize={{ minRows: 2, maxRows: 6 }} />
-                                )}
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                </Form>
+                <div id="edit-form-area">
+                    <Form horizontal>
+                        <Row gutter={16}>
+                            <Col span={6}>
+                                <h1><small>个人信息</small></h1>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={6}>
+                                <Form.Item label="姓名">
+                                    {getFieldDecorator('name', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: data.name,
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="出生">
+                                {getFieldDecorator('birthday', {
+                                    rules: [
+                                        { type: 'object', required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: moment(data.birthday, "YYYY-MM-DD"),
+                                    })(
+                                        <DatePicker allowClear={false}
+                                            getCalendarContainer={() => document.getElementById('edit-form-area')}/>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="性别">
+                                {getFieldDecorator('sex', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: "" + data.sex,
+                                    })(
+                                        <Select  placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                        {
+                                            user.conf["profile.student.sex"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="政治面貌">
+                                {getFieldDecorator('political_status', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: "" + data.political_status,
+                                    })(
+                                        <Select   placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                        {
+                                            user.conf["profile.student.political_status"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={6}>
+                                <Form.Item label="身份证">
+                                    {getFieldDecorator('id_card_number', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: data.id_card_number,
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="民族">
+                                    {getFieldDecorator('nationality', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: data.nationality,
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="手机号码">
+                                    {getFieldDecorator('phone', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: data.phone,
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="密码">
+                                    {getFieldDecorator('password', {
+                                        initialValue: data.password,
+                                    })(
+                                        <Input type="password" placeholder="重设密码"/>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={24}>
+                                <Form.Item label="户口所在地" >
+                                    {getFieldDecorator('registered_permanent_residence', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: data.registered_permanent_residence,
+                                    })(
+                                        <Input type="textarea" autosize={{ minRows: 1, maxRows: 6 }} />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <hr/>
+                        <Row gutter={16}>
+                            <Col span={6}>
+                                <h1><small>校园信息</small></h1>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={6}>
+                                <Form.Item label="学号">
+                                    {getFieldDecorator('student_number', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: data.student_number,
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="入学日期">
+                                {getFieldDecorator('enrollment_date', {
+                                    rules: [
+                                        { type: 'object', required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: moment(data.enrollment_date, "YYYY-MM-DD"),
+                                    })(
+                                        <DatePicker allowClear={false}
+                                            getCalendarContainer={() => document.getElementById('edit-form-area')}/>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="学位">
+                                {getFieldDecorator('degree', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: "" + data.degree,
+                                    })(
+                                        <Select  placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                        {
+                                            user.conf["profile.student.degree"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="学院">
+                                {getFieldDecorator('academy_id', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: "" + data.academy_id,
+                                    })(
+                                        <Select onSelect={(value, option) => {getMajorList(value)}}  placeholder="请选择" 
+                                            getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                        {
+                                            academy.map((item, index) => {
+                                                return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={6}>
+                                <Form.Item label="专业">
+                                {getFieldDecorator('major_id', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: "" + data.major_id,
+                                    })(
+                                        <Select   placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                        {
+                                            major.map((item, index) => {
+                                                return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="年级">
+                                    {getFieldDecorator('grade_id', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: "" + data.grade_id,
+                                    })(
+                                        <Select   placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                        {
+                                            user.conf["profile.student.grade_id"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                                <Form.Item label="班级">
+                                    {getFieldDecorator('class_id', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: "" + data.class_id,
+                                    })(
+                                        <Select  placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                        {
+                                            user.conf["profile.student.class_id"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={24}>
+                                <Form.Item label="备注" >
+                                    {getFieldDecorator('remark', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: data.remark,
+                                    })(
+                                        <Input type="textarea" autosize={{ minRows: 2, maxRows: 6 }} />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                    </Form>
+                </div>
             </Modal>
     );
   }
@@ -626,7 +642,7 @@ class Student extends React.Component {
 
     getAcademyList(){
         $.ajax({
-            url: "/api/v1/profile/academy",
+            url: "/api/v1/system/academy",
             type: "GET",
             dataType: "json",
             success: function(data){
@@ -643,12 +659,17 @@ class Student extends React.Component {
 
     getMajorList(academy_id){
         $.ajax({
-            url: "/api/v1/profile/major",
+            url: "/api/v1/system/major",
             type: "GET",
             data: {
                 academy_id: academy_id,
             },
             dataType: "json",
+            beforeSend: function(){
+                this.setState({
+                    selectedMajor: "-1",
+                })
+            }.bind(this),
             success: function(data){
                 if(data.ret == 0){
                     this.setState({
@@ -892,14 +913,15 @@ class Student extends React.Component {
                     </div>
                     <div className="am-u-sm-12 am-margin-vertical">
                         <div className="am-g am-g-collapse">
-                            <div className="am-u-sm-12"> 
-                                <Select size="large" value={this.state.selectedAcademy} 
+                            <div className="am-u-sm-12" id="search-form-area"> 
+                                <Select size="large" value={this.state.selectedAcademy}
+                                    getPopupContainer={() => document.getElementById('search-form-area')} 
                                     style={{ width: 150 }} className="am-margin-right-xs" 
                                     onChange={(value) => {
-                                        this.getMajorList(value);
                                         this.setState({
-                                            selectedAcademy: value
-                                        })
+                                            selectedAcademy: value,
+                                        });
+                                        this.getMajorList(value);
                                     }}>
                                     <Select.Option value={"-1"} key={-1}>选择学院</Select.Option>
                                     {
@@ -909,6 +931,7 @@ class Student extends React.Component {
                                     }
                                 </Select>
                                 <Select size="large" value={this.state.selectedMajor} 
+                                    getPopupContainer={() => document.getElementById('search-form-area')}
                                     style={{ width: 150 }} className="am-margin-right-xs" 
                                     onChange={(value) => {
                                         this.setState({
@@ -923,36 +946,32 @@ class Student extends React.Component {
                                     }
                                 </Select>
                                 <Select size="large" value={this.state.selectedGrade} 
+                                    getPopupContainer={() => document.getElementById('search-form-area')}
                                     style={{ width: 150 }} className="am-margin-right-xs" 
                                     onChange={(value) => {
                                         this.setState({
                                             selectedGrade: value
                                         })
                                     }}>
+                                    <Select.Option value={"-1"} key={-1}>选择年级</Select.Option>
                                     {
                                         user.conf["profile.student.grade_id"].map((item, index) => {
-                                            if(item[0] == -1){
-                                                return <Select.Option value={"-1"} key={-1}>选择年级</Select.Option>;
-                                            }else{
-                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                            }
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
                                         })
                                     }
                                 </Select>
                                 <Select size="large" value={this.state.selectedClass} 
+                                    getPopupContainer={() => document.getElementById('search-form-area')}
                                     style={{ width: 150 }} className="am-margin-right-xs" 
                                     onChange={(value) => {
                                         this.setState({
                                             selectedClass: value
                                         })
                                     }}>
+                                    <Select.Option value={"-1"} key={-1}>选择班级</Select.Option>
                                     {
                                         user.conf["profile.student.class_id"].map((item, index) => {
-                                            if(item[0] == -1){
-                                                return <Select.Option value={"-1"} key={-1}>选择班级</Select.Option>;
-                                            }else{
-                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                            }
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
                                         })
                                     }
                                 </Select>

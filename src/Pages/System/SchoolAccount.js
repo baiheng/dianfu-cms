@@ -49,46 +49,6 @@ const NewForm = Form.create()(
                             <Input />
                         )}
                     </Form.Item>
-                    <Form.Item>
-                        <div className="am-g am-g-collapse">
-                            <div className="am-u-sm-5">
-                            <Form.Item>
-                                {getFieldDecorator('type', {
-                                    initialValue: "" + user.admin.type,
-                                })(
-                                    <Select disabled>
-                                    {
-                                        type.map((item, index) => {
-                                            return (
-                                                <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>
-                                            )
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                            </div>
-                            <div className="am-u-sm-2">
-                            </div>
-                            <div className="am-u-sm-5">
-                            <Form.Item>
-                                {getFieldDecorator('school_id', {
-                                    initialValue: "" + user.admin.school_id,
-                                })(
-                                    <Select disabled>
-                                    {
-                                        schoolList.map((item, index) => {
-                                            return (
-                                                <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>
-                                            )
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                            </div>
-                        </div>
-                    </Form.Item>
                 </Form>
             </Modal>
     );
@@ -138,46 +98,6 @@ const EditForm = Form.create()(
                             <Input />
                         )}
                     </Form.Item>
-                    <Form.Item>
-                        <div className="am-g am-g-collapse">
-                            <div className="am-u-sm-5">
-                            <Form.Item>
-                                {getFieldDecorator('type', {
-                                    initialValue: "" + data.type,
-                                })(
-                                    <Select disabled>
-                                    {
-                                        type.map((item, index) => {
-                                            return (
-                                                <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>
-                                            )
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                            </div>
-                            <div className="am-u-sm-2">
-                            </div>
-                            <div className="am-u-sm-5">
-                            <Form.Item>
-                                {getFieldDecorator('school_id', {
-                                    initialValue: "" + data.school_id,
-                                })(
-                                    <Select disabled>
-                                    {
-                                        schoolList.map((item, index) => {
-                                            return (
-                                                <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>
-                                            )
-                                        })
-                                    }
-                                    </Select>
-                                )}
-                            </Form.Item>
-                            </div>
-                        </div>
-                    </Form.Item>
                 </Form>
             </Modal>
     );
@@ -195,7 +115,6 @@ class SchoolAccount extends React.Component {
             confirmLoading: false,
             editRecord: {},
             selectedRowKeys: [],
-            schoolList: [{id: user.admin.school_id, name: user.admin.school_name}],
         }
     }
 
@@ -262,7 +181,10 @@ class SchoolAccount extends React.Component {
         $.ajax({
             url: "/api/v1/system/account",
             type: "POST",
-            data: data,
+            data: Object.assign(data, {
+                type: 1,
+                school_id: user.admin.school_id,
+            }),
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -350,7 +272,7 @@ class SchoolAccount extends React.Component {
     }
 
     render(){
-        const type = [[user.admin.type, user.admin.type_name]];
+        const type = user.conf["system.account.type"];
         const columns = [{
                 title: 'ID',
                 key: "id",
@@ -497,8 +419,6 @@ class SchoolAccount extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    type={type}
-                    schoolList={this.state.schoolList}
                     title="新建账号"
                     confirmLoading={this.state.confirmLoading}
                     onOk={() =>{
@@ -522,8 +442,6 @@ class SchoolAccount extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    type={type}
-                    schoolList={this.state.schoolList}
                     title="修改账号信息"
                     confirmLoading={this.state.confirmLoading}
                     data={this.state.editRecord}

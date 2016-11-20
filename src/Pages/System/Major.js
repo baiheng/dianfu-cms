@@ -1,5 +1,5 @@
 import React from 'react'
-import { hashHistory, Link } from 'react-router'
+import { hashHistory } from 'react-router'
 import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm } from 'antd'
 import { user } from 'config'
 
@@ -18,7 +18,7 @@ const NewForm = Form.create()(
                 maskClosable={false}
             >
                 <Form vertical>
-                    <Form.Item label="学院名字">
+                    <Form.Item label="专业名字">
                         {getFieldDecorator('name', {
                             rules: [{ required: true, message: "不能为空" }],
                             initialValue: "",
@@ -46,7 +46,7 @@ const EditForm = Form.create()(
                 maskClosable={false}
             >
                 <Form vertical>
-                    <Form.Item label="学院名字">
+                    <Form.Item label="专业名字">
                         {getFieldDecorator('name', {
                             initialValue: data.name,
                         })(
@@ -60,7 +60,7 @@ const EditForm = Form.create()(
 );
 
 
-class Academy extends React.Component {
+class Major extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -102,7 +102,7 @@ class Academy extends React.Component {
 
     getList(){
         $.ajax({
-            url: "/api/v1/profile/academy",
+            url: "/api/v1/system/major",
             type: "GET",
             data: Object.assign({
                 start: 0,
@@ -134,9 +134,11 @@ class Academy extends React.Component {
 
     newOpt(data){
         $.ajax({
-            url: "/api/v1/profile/academy",
+            url: "/api/v1/system/major",
             type: "POST",
-            data: data,
+            data: Object.assign({
+                academy_id: this.props.location.query.academy_id
+            }, data),
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -163,7 +165,7 @@ class Academy extends React.Component {
 
     editOpt(data){
         $.ajax({
-            url: "/api/v1/profile/academy",
+            url: "/api/v1/system/major",
             type: "PUT",
             data: Object.assign(this.state.editRecord, data),
             dataType: "json",
@@ -196,7 +198,7 @@ class Academy extends React.Component {
             return;
         }
         $.ajax({
-            url: "/api/v1/profile/academy",
+            url: "/api/v1/system/major",
             type: "DELETE",
             data: this.state.editRecord,
             dataType: "json",
@@ -229,22 +231,9 @@ class Academy extends React.Component {
                 key: "id",
                 dataIndex: 'id',
             },{
-                title: '学院',
+                title: '专业',
                 key: 'name',
                 dataIndex: 'name',
-            },{
-                title: '专业',
-                key: 'major',
-                width: "100px",
-                render: (text, record) => (
-                    <Link to={{
-                        pathname: "/pages/profile/major",
-                        query: {
-                            academy_id: record.id,
-                            academy_name: record.name,
-                        }
-                    }}>查看</Link>
-                ),
             }]; 
         return (
             <div>
@@ -252,7 +241,7 @@ class Academy extends React.Component {
                     <div className="am-u-sm-12 am-margin-top">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
-                                <h2>档案管理 / 学院列表</h2>
+                                <h2>系统管理 / {this.props.location.query.academy_name} / 专业列表</h2>
                             </div>
                         </div>
                     </div>
@@ -290,7 +279,7 @@ class Academy extends React.Component {
 
                             <div className="am-u-sm-3"> 
                                 <div className="am-input-group am-input-group-default">
-                                    <input type="text" className="am-form-field" placeholder="学院名字" ref="name" />
+                                    <input type="text" className="am-form-field" placeholder="专业名字" ref="name" />
                                     <span className="am-input-group-btn">
                                         <button className="am-btn am-btn-default" type="button" 
                                         onClick={()=>{
@@ -368,7 +357,7 @@ class Academy extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    title="新建学院"
+                    title="新建专业"
                     confirmLoading={this.state.confirmLoading}
                     onOk={() =>{
                         this.newForm.validateFields((err, values) => {
@@ -391,7 +380,7 @@ class Academy extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    title="修改学院"
+                    title="修改专业"
                     confirmLoading={this.state.confirmLoading}
                     data={this.state.editRecord}
                     onOk={() =>{
@@ -410,4 +399,4 @@ class Academy extends React.Component {
     }
 }
  
-module.exports = Academy
+module.exports = Major

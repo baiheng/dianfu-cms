@@ -17,6 +17,7 @@ const NewForm = Form.create()(
                 confirmLoading={confirmLoading}
                 maskClosable={false}
             >
+                <div id="new-form-area">
                 <Form vertical>
                     <Form.Item label="登录邮箱">
                         {getFieldDecorator('email', {
@@ -54,9 +55,9 @@ const NewForm = Form.create()(
                             <div className="am-u-sm-5">
                             <Form.Item>
                                 {getFieldDecorator('type', {
-                                    initialValue: "0",
+                                    initialValue: "" + user.admin.type,
                                 })(
-                                    <Select>
+                                    <Select getPopupContainer={() => document.getElementById('new-form-area')}>
                                     {
                                         type.map((item, index) => {
                                             return (
@@ -73,9 +74,9 @@ const NewForm = Form.create()(
                             <div className="am-u-sm-5">
                             <Form.Item>
                                 {getFieldDecorator('school_id', {
-                                    initialValue: "1",
+                                    initialValue: "" + user.admin.school_id,
                                 })(
-                                    <Select>
+                                    <Select getPopupContainer={() => document.getElementById('new-form-area')}>
                                     {
                                         schoolList.map((item, index) => {
                                             return (
@@ -90,6 +91,7 @@ const NewForm = Form.create()(
                         </div>
                     </Form.Item>
                 </Form>
+                </div>
             </Modal>
     );
   }
@@ -108,6 +110,7 @@ const EditForm = Form.create()(
                 confirmLoading={confirmLoading}
                 maskClosable={false}
             >
+                <div id="edit-form-area">
                 <Form vertical>
                     <Form.Item label="登录邮箱">
                         {getFieldDecorator('email', {
@@ -145,7 +148,7 @@ const EditForm = Form.create()(
                                 {getFieldDecorator('type', {
                                     initialValue: "" + data.type,
                                 })(
-                                    <Select>
+                                    <Select getPopupContainer={() => document.getElementById('edit-form-area')}>
                                     {
                                         type.map((item, index) => {
                                             return (
@@ -164,7 +167,7 @@ const EditForm = Form.create()(
                                 {getFieldDecorator('school_id', {
                                     initialValue: "" + data.school_id,
                                 })(
-                                    <Select>
+                                    <Select getPopupContainer={() => document.getElementById('edit-form-area')}>
                                     {
                                         schoolList.map((item, index) => {
                                             return (
@@ -179,6 +182,7 @@ const EditForm = Form.create()(
                         </div>
                     </Form.Item>
                 </Form>
+                </div>
             </Modal>
     );
   }
@@ -233,6 +237,7 @@ class Account extends React.Component {
             data: Object.assign({
                 start: 0,
                 end: 50,
+                type: 0,
             }, this.props.location.query), 
             dataType: "json",
             beforeSend: function(){
