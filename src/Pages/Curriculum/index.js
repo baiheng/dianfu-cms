@@ -14,5 +14,9 @@ module.exports = {
             path: 'subject_student',
             component: require("./SubjectStudent"), 
         },
+        {
+            path: 'subject_timetable_detail',
+            component: require("./SubjectTimetableDetail"), 
+        },
     ],
 }

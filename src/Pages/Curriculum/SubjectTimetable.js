@@ -967,13 +967,13 @@ class SubjectTimetable extends React.Component {
                 dataIndex: 'remark',
             },
             {
-                title: '上课学生',
+                title: '详情',
                 key: 'subject_student',
                 dataIndex: 'subject_student',
                 render: (text, record, index) => {
                     return (
                         <Link to={{
-                            pathname: "/pages/curriculum/subject_student",
+                            pathname: "/pages/curriculum/subject_timetable_detail",
                             query: {
                                 subject_timetable_id: record.id,
                             },
