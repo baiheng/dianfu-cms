@@ -203,14 +203,14 @@ const NewForm = Form.create()(
                                     <Row gutter={16} key={parentItem}>
                                         <Col span={6}>
                                             <Form.Item label="周几">
-                                                {getFieldDecorator(`week-${parentItem}`, {
+                                                {getFieldDecorator(`weekday-${parentItem}`, {
                                                     rules: [{ required: true, message: "不能为空" }],
                                                 })(
                                                     <Select 
                                                         placeholder="请选择" 
                                                         getPopupContainer={() => document.getElementById('new-form-area')}>
                                                     {
-                                                        user.conf["curriculum.subject_timetable.week"].map((item, index) => {
+                                                        user.conf["curriculum.subject_timetable.weekday"].map((item, index) => {
                                                             return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
                                                         })
                                                     }
@@ -499,11 +499,11 @@ const EditForm = Form.create()(
                         </Row>
                         {
                             editTimeList.map((parentItem, parentIndex) => {
-                                let week = null;
+                                let weekday = null;
                                 let start_time = null;
                                 let end_time = null;
                                 if(data.class_time_json[parentIndex]){
-                                    week = "" +  data.class_time_json[parentIndex].week;
+                                    weekday = "" +  data.class_time_json[parentIndex].weekday;
                                     start_time = "" +  data.class_time_json[parentIndex].start_time;
                                     end_time = "" +  data.class_time_json[parentIndex].end_time;
                                 }
@@ -511,15 +511,15 @@ const EditForm = Form.create()(
                                     <Row gutter={16} key={parentItem}>
                                         <Col span={6}>
                                             <Form.Item label="周几">
-                                                {getFieldDecorator(`week-${parentItem}`, {
+                                                {getFieldDecorator(`weekday-${parentItem}`, {
                                                     rules: [{ required: true, message: "不能为空" }],
-                                                    initialValue: week,
+                                                    initialValue: weekday,
                                                 })(
                                                     <Select 
                                                         placeholder="请选择" 
                                                         getPopupContainer={() => document.getElementById('edit-form-area')}>
                                                     {
-                                                        user.conf["curriculum.subject_timetable.week"].map((item, index) => {
+                                                        user.conf["curriculum.subject_timetable.weekday"].map((item, index) => {
                                                             return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
                                                         })
                                                     }
@@ -930,10 +930,10 @@ class SubjectTimetable extends React.Component {
                 render: (text, record, index) => {
                     let class_time = "";
                     record.class_time_json.map((item) => {
-                        let week_name = "";
-                        for (let i of user.conf["curriculum.subject_timetable.week"]){
-                            if(i[0] == item.week){
-                                week_name = i[1];
+                        let weekday_name = "";
+                        for (let i of user.conf["curriculum.subject_timetable.weekday"]){
+                            if(i[0] == item.weekday){
+                                weekday_name = i[1];
                                 break;
                             }
                         }
@@ -951,7 +951,7 @@ class SubjectTimetable extends React.Component {
                                 break;
                             }
                         }
-                        class_time += `${week_name} ${start_time} ~ ${end_time}; `
+                        class_time += `${weekday_name} ${start_time} ~ ${end_time}; `
                     });
                     return class_time;
                 },
@@ -976,8 +976,8 @@ class SubjectTimetable extends React.Component {
                             pathname: "/pages/curriculum/subject_student",
                             query: {
                                 subject_timetable_id: record.id,
-                                course_name: record.course_name,
-                            }
+                            },
+                            state: record
                         }}>查看</Link>
                     );
                 },
@@ -1124,11 +1124,11 @@ class SubjectTimetable extends React.Component {
                             let class_time_json = [];
                             this.state.timeList.map((item, index) => {
                                 class_time_json.push({
-                                    week: parseInt(values[`week-${item}`]),
+                                    weekday: parseInt(values[`weekday-${item}`]),
                                     "start_time": parseInt(values[`start-time-${item}`]),
                                     "end_time": parseInt(values[`end-time-${item}`]),
                                 });
-                                delete values[`week-${item}`];
+                                delete values[`weekday-${item}`];
                                 delete values[`start-time-${item}`];
                                 delete values[`end-time-${item}`];
                             })
@@ -1166,11 +1166,11 @@ class SubjectTimetable extends React.Component {
                             let class_time_json = [];
                             this.state.editTimeList.map((item, index) => {
                                 class_time_json.push({
-                                    week: parseInt(values[`week-${item}`]),
+                                    weekday: parseInt(values[`weekday-${item}`]),
                                     "start_time": parseInt(values[`start-time-${item}`]),
                                     "end_time": parseInt(values[`end-time-${item}`]),
                                 });
-                                delete values[`week-${item}`];
+                                delete values[`weekday-${item}`];
                                 delete values[`start-time-${item}`];
                                 delete values[`end-time-${item}`];
                             })

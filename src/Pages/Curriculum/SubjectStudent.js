@@ -76,6 +76,7 @@ class SubjectStudent extends React.Component {
 
     componentWillMount() {
         this.getList();
+        console.log(this.props.location);
     }
 
     componentDidMount() {
@@ -264,7 +265,7 @@ class SubjectStudent extends React.Component {
                     <div className="am-u-sm-12 am-margin-top">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
-                                <h2>课表 / {this.props.location.query.course_name} / 学生列表</h2>
+                                <h2>课表 / {this.props.location.state.course_name} / 学生列表</h2>
                             </div>
                         </div>
                     </div>

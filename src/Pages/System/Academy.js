@@ -241,8 +241,8 @@ class Academy extends React.Component {
                         pathname: "/pages/system/major",
                         query: {
                             academy_id: record.id,
-                            academy_name: record.name,
-                        }
+                        },
+                        state: record
                     }}>查看</Link>
                 ),
             }]; 
