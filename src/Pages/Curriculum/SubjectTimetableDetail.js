@@ -25,7 +25,7 @@ class SubjectTimetableDetail extends React.Component {
             success: function(data){
                 if(data.ret == 0){
                     this.setState({
-                        detail: data.data,
+                        detail: data.data.list,
                     });
                 }else{
                     user.showRequestError(data)

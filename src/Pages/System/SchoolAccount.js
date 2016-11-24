@@ -164,6 +164,8 @@ class SchoolAccount extends React.Component {
                     this.setState({
                         list: data.data.list,
                         total: data.data.total,
+                        editRecord: [],
+                        selectedRowKeys: [],
                     });
                 }else{
                     user.showRequestError(data)

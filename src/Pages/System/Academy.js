@@ -119,6 +119,8 @@ class Academy extends React.Component {
                     this.setState({
                         list: data.data.list,
                         total: data.data.count,
+                        editRecord: [],
+                        selectedRowKeys: [],
                     });
                 }else{
                     user.showRequestError(data)

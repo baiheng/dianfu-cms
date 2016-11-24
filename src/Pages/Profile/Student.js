@@ -648,7 +648,7 @@ class Student extends React.Component {
             success: function(data){
                 if(data.ret == 0){
                     this.setState({
-                        academy: data.data,
+                        academy: data.data.list,
                     });
                 }else{
                     user.showRequestError(data)
@@ -701,6 +701,8 @@ class Student extends React.Component {
                     this.setState({
                         list: data.data.list,
                         total: data.data.count,
+                        editRecord: [],
+                        selectedRowKeys: [],
                     });
                 }else{
                     user.showRequestError(data)

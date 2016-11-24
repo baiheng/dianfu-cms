@@ -250,6 +250,8 @@ class Account extends React.Component {
                     this.setState({
                         list: data.data.list,
                         total: data.data.total,
+                        editRecord: [],
+                        selectedRowKeys: [],
                     });
                 }else{
                     user.showRequestError(data)
@@ -271,7 +273,7 @@ class Account extends React.Component {
             success: function(data){
                 if(data.ret == 0){
                     this.setState({
-                        schoolList: data.data,
+                        schoolList: data.data.list,
                     });
                 }else{
                     user.showRequestError(data)

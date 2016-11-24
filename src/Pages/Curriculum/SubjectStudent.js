@@ -15,6 +15,7 @@ class SubjectStudent extends React.Component {
             confirmLoading: false,
             editRecord: {},
             selectedRowKeys: [],
+            addStudentList: [],
             search: {
                 subject_timetable_id: this.props.id
             },
@@ -66,6 +67,8 @@ class SubjectStudent extends React.Component {
                     this.setState({
                         list: data.data.list,
                         total: data.data.count,
+                        editRecord: [],
+                        selectedRowKeys: [],
                     });
                 }else{
                     user.showRequestError(data)
@@ -79,13 +82,46 @@ class SubjectStudent extends React.Component {
         })
     }
 
+    searchStudentList(student_number){
+        $.ajax({
+            url: "/api/v1/profile/student",
+            type: "GET",
+            data: { student_number }, 
+            dataType: "json",
+            success: function(data){
+                if(data.ret == 0){
+                    if(data.data.total == 0){
+                        return user.showMsg("没有该学生");
+                    }
+                    if(data.data.total != 1){
+                        return user.showMsg("请检测学生学号是否冲突");
+                    }
+                    let student = data.data.list[0];
+                    let addStudentList = this.state.addStudentList;
+                    for(let i of addStudentList){
+                        if(i.id == student.id){
+                            return
+                        }
+                    }
+                    this.setState({
+                        addStudentList: addStudentList.concat(student),
+                    });
+                    this.refs.student_number.value = "";
+                }else{
+                    user.showRequestError(data)
+                }
+            }.bind(this),
+        })
+    }
+
     newOpt(data){
         $.ajax({
             url: "/api/v1/curriculum/subject_student",
             type: "POST",
-            data: Object.assign({
-                academy_id: this.props.detail.academy_id
-            }, data),
+            data: JSON.stringify({
+                subject_timetable_id: this.state.search.subject_timetable_id,
+                student_id_list: this.state.addStudentList.map((item) => {return item.id})
+            }),
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -96,6 +132,7 @@ class SubjectStudent extends React.Component {
                 if(data.ret == 0){
                     this.setState({
                         modalType: "close",
+                        addStudentList: [],
                     });
                     this.getList();
                 }else{
@@ -274,16 +311,15 @@ class SubjectStudent extends React.Component {
                     onCancel={()=>{
                         this.setState({
                             modalType: "close",
+                            addStudentList: [],
                         });
+                        this.refs.student_number.value = "";
                     }}
                     onOk={() =>{
-                        this.newForm.validateFields((err, values) => {
-                            if (err) {
-                                return;
-                            }
-                            this.newForm.resetFields();
-                            this.newOpt(values);
-                        });
+                        if(this.state.addStudentList.length == 0){
+                            return user.showMsg("请添加学生");
+                        }
+                        this.newOpt();
                     }}
                     confirmLoading={this.state.confirmLoading}
                     maskClosable={false}
@@ -295,6 +331,9 @@ class SubjectStudent extends React.Component {
                                 <span className="am-input-group-btn">
                                     <button className="am-btn am-btn-default" type="button" 
                                     onClick={()=>{
+                                        if(this.refs.student_number.value != ""){
+                                            this.searchStudentList(this.refs.student_number.value)
+                                        }
                                         }}>
                                         <span className="am-icon-search"></span>
                                     </button>
@@ -305,15 +344,17 @@ class SubjectStudent extends React.Component {
                             <div className="am-panel am-panel-default">
                                 <div className="am-panel-hd">添加以下学生到该课堂</div>
                                 <div className="am-panel-bd">
-                                    <Tag closable >Tag 1</Tag>
-                                    <Tag closable >Tag 1</Tag>
-                                    <Tag closable >Tag 1</Tag>
-                                    <Tag closable >Tag 1</Tag>
-                                    <Tag closable >Tag 1</Tag>
-                                    <Tag closable >Tag 1</Tag>
-                                    <Tag closable >Tag 1</Tag>
-                                    <Tag closable >Tag 1</Tag>
-                                    <Tag closable >Tag 1</Tag>
+                                {
+                                    this.state.addStudentList.map((item, index) => {
+                                        return (
+                                            <Tag key={index} closable onClose={(e) => {
+                                                this.setState({
+                                                    addStudentList: this.state.addStudentList.filter(i => i.id != item.id)
+                                                })
+                                            }}>{`${item.student_number} ( ${item.name} ) `}</Tag>
+                                        );
+                                    })
+                                }
                                 </div>
                             </div>
                         </div>

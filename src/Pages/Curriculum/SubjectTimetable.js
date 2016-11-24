@@ -677,6 +677,8 @@ class SubjectTimetable extends React.Component {
                     this.setState({
                         list: data.data.list,
                         total: data.data.count,
+                        editRecord: [],
+                        selectedRowKeys: [],
                     });
                 }else{
                     user.showRequestError(data)
@@ -793,7 +795,7 @@ class SubjectTimetable extends React.Component {
             success: function(data){
                 if(data.ret == 0){
                     this.setState({
-                        course: data.data,
+                        course: data.data.list,
                     });
                 }else{
                     user.showRequestError(data)
@@ -812,7 +814,7 @@ class SubjectTimetable extends React.Component {
             success: function(data){
                 if(data.ret == 0){
                     this.setState({
-                        tearch: data.data,
+                        tearch: data.data.list,
                     });
                 }else{
                     user.showRequestError(data)
@@ -829,7 +831,7 @@ class SubjectTimetable extends React.Component {
             success: function(data){
                 if(data.ret == 0){
                     this.setState({
-                        academy: data.data,
+                        academy: data.data.list,
                     });
                 }else{
                     user.showRequestError(data)
@@ -854,7 +856,7 @@ class SubjectTimetable extends React.Component {
             success: function(data){
                 if(data.ret == 0){
                     this.setState({
-                        major: data.data,
+                        major: data.data.list,
                     });
                 }else{
                     user.showRequestError(data)
