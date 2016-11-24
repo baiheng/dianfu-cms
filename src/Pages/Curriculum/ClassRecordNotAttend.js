@@ -4,7 +4,7 @@ import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, Tag
 import { user } from 'config'
 
 
-class SubjectStudent extends React.Component {
+class ClassRecordNotAttend extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -50,11 +50,12 @@ class SubjectStudent extends React.Component {
 
     getList(){
         $.ajax({
-            url: "/api/v1/curriculum/subject_student",
+            url: "/api/v1/curriculum/class_record",
             type: "GET",
             data: Object.assign({
                 start: 0,
-                end: 50
+                end: 50,
+                type: -1,
             }, this.state.search), 
             dataType: "json",
             beforeSend: function(){
@@ -82,80 +83,17 @@ class SubjectStudent extends React.Component {
         })
     }
 
-    searchStudentList(student_number){
-        $.ajax({
-            url: "/api/v1/profile/student",
-            type: "GET",
-            data: { student_number }, 
-            dataType: "json",
-            success: function(data){
-                if(data.ret == 0){
-                    if(data.data.total == 0){
-                        return user.showMsg("没有该学生");
-                    }
-                    if(data.data.total != 1){
-                        return user.showMsg("请检测学生学号是否冲突");
-                    }
-                    let student = data.data.list[0];
-                    let addStudentList = this.state.addStudentList;
-                    for(let i of addStudentList){
-                        if(i.id == student.id){
-                            return
-                        }
-                    }
-                    this.setState({
-                        addStudentList: addStudentList.concat(student),
-                    });
-                    this.refs.student_number.value = "";
-                }else{
-                    user.showRequestError(data)
-                }
-            }.bind(this),
-        })
-    }
-
-    newOpt(data){
-        $.ajax({
-            url: "/api/v1/curriculum/subject_student",
-            type: "POST",
-            data: JSON.stringify({
-                subject_timetable_id: this.state.search.subject_timetable_id,
-                student_id_list: this.state.addStudentList.map((item) => {return item.id})
-            }),
-            dataType: "json",
-            beforeSend: function(){
-                this.setState({
-                    confirmLoading: true,
-                })
-            }.bind(this),
-            success: function(data){
-                if(data.ret == 0){
-                    this.setState({
-                        modalType: "close",
-                        addStudentList: [],
-                    });
-                    this.getList();
-                }else{
-                    user.showRequestError(data)
-                }
-            }.bind(this),
-            complete: function(){
-                this.setState({
-                    confirmLoading: false,
-                });
-            }.bind(this),
-        })
-    }
-
-    deleteOpt(){
+    editOpt(){
         if(Object.keys(this.state.editRecord).length === 0){
             user.showMsg("请选择编辑项");
             return;
         }
         $.ajax({
-            url: "/api/v1/curriculum/subject_student",
-            type: "DELETE",
-            data: this.state.editRecord,
+            url: "/api/v1/curriculum/class_record",
+            type: "PUT",
+            data: JSON.stringify(
+                Object.assign(this.state.editRecord, {type: -1})
+                ),
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -188,29 +126,39 @@ class SubjectStudent extends React.Component {
                 dataIndex: 'student_number',
             },
             {
-                title: '学院',
-                key: 'academy_name',
-                dataIndex: 'academy_name',
-            },
-            {
-                title: '专业',
-                key: 'major_name',
-                dataIndex: 'major_name',
-            },
-            {
-                title: '年级',
-                key: 'grade_name',
-                dataIndex: 'grade_name',
-            },
-            {
-                title: '班级',
-                key: 'class_name',
-                dataIndex: 'class_name',
-            },
-            {
                 title: '学生',
                 key: 'student_name',
                 dataIndex: 'student_name',
+            },
+            {
+                title: '上课周',
+                key: 'week_name',
+                dataIndex: 'week_name',
+            },
+            {
+                title: '周几',
+                key: 'weekday_name',
+                dataIndex: 'weekday_name',
+            },
+            {
+                title: '上课时间',
+                key: 'start_end_time_name',
+                dataIndex: 'start_end_time_name',
+                render: (text, record, index) => {
+                    return (
+                        record.start_time_name + " ~ " + record.end_time_name
+                    );
+                },
+            },
+            {
+                title: '签到时间',
+                key: 'update_time',
+                dataIndex: 'update_time',
+            },
+            {
+                title: '签到情况',
+                key: 'type_name',
+                dataIndex: 'type_name',
             }
             ]; 
         return (
@@ -219,18 +167,11 @@ class SubjectStudent extends React.Component {
                     <div className="am-u-sm-12 am-margin-vertical">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
-                                <button className="am-btn am-btn-default"
-                                    onClick={()=>{
-                                        this.setState({
-                                            modalType: "add",
-                                        });
-                                    }}
-                                >
-                                    <Icon type="plus" />
-                                </button>
-                                <Popconfirm title="确定删除？" okText="删除" cancelText="取消" onConfirm={this.deleteOpt.bind(this)}>
+                                <Popconfirm title="确定补签？" 
+                                    okText="补签" cancelText="取消" 
+                                    onConfirm={this.editOpt.bind(this)}>
                                     <button className="am-btn am-btn-default am-margin-left-xs">
-                                        <Icon type="delete" />
+                                        补签
                                     </button>
                                 </Popconfirm>
                             </div>
@@ -307,65 +248,10 @@ class SubjectStudent extends React.Component {
                     </div>
                 </div>
 
-                <Modal
-                    visible={this.state.modalType == "add"}
-                    title="添加学生"
-                    onCancel={()=>{
-                        this.setState({
-                            modalType: "close",
-                            addStudentList: [],
-                        });
-                        this.refs.student_number.value = "";
-                    }}
-                    onOk={() =>{
-                        if(this.state.addStudentList.length == 0){
-                            return user.showMsg("请添加学生");
-                        }
-                        this.newOpt();
-                    }}
-                    confirmLoading={this.state.confirmLoading}
-                    maskClosable={false}
-                >
-                    <div className="am-g">
-                        <div className="am-u-sm-12 am-margin-vertical">
-                            <div className="am-input-group am-input-group-default">
-                                <input type="text" className="am-form-field" placeholder="学号" ref="student_number" />
-                                <span className="am-input-group-btn">
-                                    <button className="am-btn am-btn-default" type="button" 
-                                    onClick={()=>{
-                                        if(this.refs.student_number.value != ""){
-                                            this.searchStudentList(this.refs.student_number.value)
-                                        }
-                                        }}>
-                                        <span className="am-icon-search"></span>
-                                    </button>
-                                </span>
-                            </div>
-                        </div>
-                        <div className="am-u-sm-12">
-                            <div className="am-panel am-panel-default">
-                                <div className="am-panel-hd">添加以下学生到该课堂</div>
-                                <div className="am-panel-bd">
-                                {
-                                    this.state.addStudentList.map((item, index) => {
-                                        return (
-                                            <Tag key={index} closable onClose={(e) => {
-                                                this.setState({
-                                                    addStudentList: this.state.addStudentList.filter(i => i.id != item.id)
-                                                })
-                                            }}>{`${item.student_number} ( ${item.name} ) `}</Tag>
-                                        );
-                                    })
-                                }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </Modal>
 
             </div>
         )
     }
 }
  
-module.exports = SubjectStudent
+module.exports = ClassRecordNotAttend

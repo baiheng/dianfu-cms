@@ -4,6 +4,10 @@ import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Tabs  } from 'a
 import { user } from 'config'
 
 import SubjectStudent from './SubjectStudent'
+import ClassRecord from './ClassRecord'
+import ClassRecordLeave from './ClassRecordLeave'
+import ClassRecordNotAttend from './ClassRecordNotAttend'
+
 
 
 class SubjectTimetableDetail extends React.Component {
@@ -19,7 +23,7 @@ class SubjectTimetableDetail extends React.Component {
             url: "/api/v1/curriculum/subject_timetable",
             type: "GET",
             data: {
-                id: this.props.location.query.subject_timetable_id
+                id: this.props.location.query.subject_timetable_id,
             }, 
             dataType: "json",
             success: function(data){
@@ -157,9 +161,24 @@ class SubjectTimetableDetail extends React.Component {
                                     id={this.props.location.query.subject_timetable_id}
                                 />
                             </Tabs.TabPane>
-                            <Tabs.TabPane tab="签到" key="2">Content of Tab Pane 2</Tabs.TabPane>
-                            <Tabs.TabPane tab="请假" key="3">Content of Tab Pane 3</Tabs.TabPane>
-                            <Tabs.TabPane tab="缺课" key="4">Content of Tab Pane 3</Tabs.TabPane>
+                            <Tabs.TabPane tab="签到" key="2">
+                                <ClassRecord
+                                    detail={this.state.detail}
+                                    id={this.props.location.query.subject_timetable_id}
+                                />
+                            </Tabs.TabPane>
+                            <Tabs.TabPane tab="请假" key="3">
+                                <ClassRecordLeave
+                                    detail={this.state.detail}
+                                    id={this.props.location.query.subject_timetable_id}
+                                />
+                            </Tabs.TabPane>
+                            <Tabs.TabPane tab="缺课" key="4">
+                                <ClassRecordNotAttend
+                                    detail={this.state.detail}
+                                    id={this.props.location.query.subject_timetable_id}
+                                />
+                            </Tabs.TabPane>
                         </Tabs>
                     </div>
                 </div>
