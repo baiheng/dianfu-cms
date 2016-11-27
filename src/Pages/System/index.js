@@ -26,5 +26,9 @@ module.exports = {
             path: 'major',
             component: require("./Major"), 
         },
+        {
+            path: 'all_settings',
+            component: require("./AllSettings"), 
+        },
     ],
 }

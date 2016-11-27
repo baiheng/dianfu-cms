@@ -1,12 +1,12 @@
 import React from 'react'
 import { hashHistory } from 'react-router'
-import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm } from 'antd'
+import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, DatePicker } from 'antd'
 import { user } from 'config'
 
 
 const NewForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, title, confirmLoading} = props;
+        const { visible, onCancel, onOk, form, type, schoolList, title, confirmLoading} = props;
         const { getFieldDecorator } = form;
         return (
             <Modal
@@ -17,16 +17,53 @@ const NewForm = Form.create()(
                 confirmLoading={confirmLoading}
                 maskClosable={false}
             >
-                <Form vertical>
-                    <Form.Item label="专业名字">
-                        {getFieldDecorator('name', {
-                            rules: [{ required: true, message: "不能为空" }],
-                            initialValue: "",
-                        })(
-                            <Input />
-                        )}
-                    </Form.Item>
-                </Form>
+                <div id="new-form-area">
+                    <Form vertical>
+                        <Form.Item label="一学期多少周">
+                            {getFieldDecorator('week_number', {
+                                rules: [{ required: true, message: "不能为空" }],
+                                initialValue: "",
+                            })(
+                                <Input type="number" />
+                            )}
+                        </Form.Item>
+                        <Form.Item label="学期第一天日期">
+                        {getFieldDecorator('first_week', {
+                            rules: [
+                                { type: 'object', required: true, message: '不能为空' },
+                            ],
+                            initialValue: moment("2017-01-31", "YYYY-MM-DD"),
+                            })(
+                                <DatePicker allowClear={false}
+                                    getCalendarContainer={() => document.getElementById('new-form-area')}/>
+                            )}
+                        </Form.Item>
+                        <Form.Item label="学期名称">
+                            {getFieldDecorator('semester', {
+                                rules: [{ required: true, message: "不能为空" }],
+                                initialValue: "",
+                            })(
+                                <Input placeholder="2017年第二学期" />
+                            )}
+                        </Form.Item>
+                        <Form.Item label="更新配置">
+                        {getFieldDecorator('type', {
+                            rules: [
+                                { required: true, message: '不能为空' },
+                            ],
+                            })(
+                                <Select  placeholder="请选择"
+                                    getPopupContainer={() => document.getElementById('new-form-area')}>
+                                {
+                                    user.conf["system.all_settings.type"].map((item, index) => {
+                                        return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                    })
+                                }
+                                </Select>
+                            )}
+                        </Form.Item>
+                    </Form>
+                </div>
             </Modal>
     );
   }
@@ -34,7 +71,7 @@ const NewForm = Form.create()(
 
 const EditForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, title, confirmLoading, data} = props;
+        const { visible, onCancel, onOk, form, type, title, schoolList, confirmLoading, data} = props;
         const { getFieldDecorator } = form;
         return (
             <Modal
@@ -45,22 +82,60 @@ const EditForm = Form.create()(
                 confirmLoading={confirmLoading}
                 maskClosable={false}
             >
-                <Form vertical>
-                    <Form.Item label="专业名字">
-                        {getFieldDecorator('name', {
-                            initialValue: data.name,
-                        })(
-                            <Input />
-                        )}
-                    </Form.Item>
-                </Form>
+                <div id="edit-form-area">
+                    <Form vertical>
+                        <Form.Item label="一学期多少周">
+                            {getFieldDecorator('week_number', {
+                                rules: [{ required: true, message: "不能为空" }],
+                                initialValue: "" + data.week_number,
+                            })(
+                                <Input type="number" />
+                            )}
+                        </Form.Item>
+                        <Form.Item label="学期第一天日期">
+                        {getFieldDecorator('first_week', {
+                            rules: [
+                                { type: 'object', required: true, message: '不能为空' },
+                            ],
+                            initialValue: moment(data.first_week, "YYYY-MM-DD"),
+                            })(
+                                <DatePicker allowClear={false}
+                                    getCalendarContainer={() => document.getElementById('edit-form-area')}/>
+                            )}
+                        </Form.Item>
+                        <Form.Item label="学期名称">
+                            {getFieldDecorator('semester', {
+                                rules: [{ required: true, message: "不能为空" }],
+                                initialValue: data.semester,
+                            })(
+                                <Input placeholder="2017年第二学期" />
+                            )}
+                        </Form.Item>
+                        <Form.Item label="更新配置">
+                        {getFieldDecorator('type', {
+                            rules: [
+                                { required: true, message: '不能为空' },
+                            ],
+                                initialValue: "" + data.type,
+                            })(
+                                <Select  placeholder="请选择"
+                                    getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                {
+                                    user.conf["system.all_settings.type"].map((item, index) => {
+                                        return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                    })
+                                }
+                                </Select>
+                            )}
+                        </Form.Item>
+                    </Form>
+                </div>
             </Modal>
     );
   }
 );
 
-
-class Major extends React.Component {
+class AllSettings extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -75,10 +150,10 @@ class Major extends React.Component {
     }
 
     componentWillMount() {
-        this.getList();
     }
 
     componentDidMount() {
+        this.getList();
     }
 
     componentWillReceiveProps(nextProps){
@@ -102,11 +177,11 @@ class Major extends React.Component {
 
     getList(){
         $.ajax({
-            url: "/api/v1/system/major",
+            url: "/api/v1/system/all_settings",
             type: "GET",
             data: Object.assign({
                 start: 0,
-                end: 50
+                end: 50,
             }, this.props.location.query), 
             dataType: "json",
             beforeSend: function(){
@@ -136,11 +211,9 @@ class Major extends React.Component {
 
     newOpt(data){
         $.ajax({
-            url: "/api/v1/system/major",
+            url: "/api/v1/system/all_settings",
             type: "POST",
-            data: Object.assign({
-                academy_id: this.props.location.query.academy_id
-            }, data),
+            data: data,
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -167,42 +240,9 @@ class Major extends React.Component {
 
     editOpt(data){
         $.ajax({
-            url: "/api/v1/system/major",
+            url: "/api/v1/system/all_settings",
             type: "PUT",
             data: Object.assign(this.state.editRecord, data),
-            dataType: "json",
-            beforeSend: function(){
-                this.setState({
-                    confirmLoading: true,
-                })
-            }.bind(this),
-            success: function(data){
-                if(data.ret == 0){
-                    this.setState({
-                        modalType: "close",
-                    });
-                    this.getList();
-                }else{
-                    user.showRequestError(data)
-                }
-            }.bind(this),
-            complete: function(){
-                this.setState({
-                    confirmLoading: false,
-                });
-            }.bind(this),
-        })
-    }
-
-    deleteOpt(){
-        if(Object.keys(this.state.editRecord).length === 0){
-            user.showMsg("请选择编辑项");
-            return;
-        }
-        $.ajax({
-            url: "/api/v1/system/major",
-            type: "DELETE",
-            data: this.state.editRecord,
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -233,9 +273,21 @@ class Major extends React.Component {
                 key: "id",
                 dataIndex: 'id',
             },{
-                title: '专业',
-                key: 'name',
-                dataIndex: 'name',
+                title: '一学期多少周',
+                key: 'week_number',
+                dataIndex: 'week_number',
+            },{
+                title: '学期第一天日期',
+                key: 'first_week',
+                dataIndex: 'first_week',
+            },{
+                title: '学期名称',
+                key: 'semester',
+                dataIndex: 'semester',
+            },{
+                title: '类型',
+                key: 'type_name',
+                dataIndex: 'type_name',
             }]; 
         return (
             <div>
@@ -243,7 +295,7 @@ class Major extends React.Component {
                     <div className="am-u-sm-12 am-margin-top">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
-                                <h2>系统管理 / {this.props.location.state.academy_name} / 专业列表</h2>
+                                <h2>系统管理 / 学期设置</h2>
                             </div>
                         </div>
                     </div>
@@ -272,35 +324,6 @@ class Major extends React.Component {
                                 >
                                     <Icon type="edit" />
                                 </button>
-                                <Popconfirm title="确定删除？" okText="删除" cancelText="取消" onConfirm={this.deleteOpt.bind(this)}>
-                                    <button className="am-btn am-btn-default am-margin-left-xs">
-                                        <Icon type="delete" />
-                                    </button>
-                                </Popconfirm>
-                            </div>
-
-                            <div className="am-u-sm-3"> 
-                                <div className="am-input-group am-input-group-default">
-                                    <input type="text" className="am-form-field" placeholder="专业名字" ref="name" />
-                                    <span className="am-input-group-btn">
-                                        <button className="am-btn am-btn-default" type="button" 
-                                        onClick={()=>{
-                                                let v = this.refs.name.value;
-                                                let q = Object.assign({}, this.props.location.query);
-                                                if(v == ""){
-                                                    delete q.like;
-                                                }else{
-                                                    q = Object.assign(q, {like: "name^" + v});
-                                                }
-                                                hashHistory.push({
-                                                    pathname: this.props.location.pathname,
-                                                    query: q, 
-                                                });
-                                            }}>
-                                            <span className="am-icon-search"></span>
-                                        </button>
-                                    </span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -359,7 +382,7 @@ class Major extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    title="新建专业"
+                    title="新建配置"
                     confirmLoading={this.state.confirmLoading}
                     onOk={() =>{
                         this.newForm.validateFields((err, values) => {
@@ -367,7 +390,11 @@ class Major extends React.Component {
                                 return;
                             }
                             this.newForm.resetFields();
-                            this.newOpt(values);
+                            let transform = {
+                                ...values,
+                                first_week: values.first_week.format('YYYY-MM-DD'),
+                            };
+                            this.newOpt(transform);
                         });
                     }}
                 />
@@ -382,7 +409,7 @@ class Major extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    title="修改专业"
+                    title="修改配置"
                     confirmLoading={this.state.confirmLoading}
                     data={this.state.editRecord}
                     onOk={() =>{
@@ -391,7 +418,11 @@ class Major extends React.Component {
                                 return;
                             }
                             this.editForm.resetFields();
-                            this.editOpt(values);
+                            let transform = {
+                                ...values,
+                                first_week: values.first_week.format('YYYY-MM-DD'),
+                            };
+                            this.editOpt(transform);
                         });
                     }}
                 />
@@ -400,5 +431,8 @@ class Major extends React.Component {
         )
     }
 }
- 
-module.exports = Major
+
+AllSettings.defaultProps = {
+}
+
+module.exports = AllSettings

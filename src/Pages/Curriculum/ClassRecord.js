@@ -67,7 +67,7 @@ class ClassRecord extends React.Component {
                 if(data.ret == 0){
                     this.setState({
                         list: data.data.list,
-                        total: data.data.count,
+                        total: data.data.total,
                         editRecord: [],
                         selectedRowKeys: [],
                     });
@@ -130,6 +130,29 @@ class ClassRecord extends React.Component {
             <div>
                 <div className="am-g">
                     <div className="am-u-sm-12 am-margin-vertical">
+                        <div className="am-g am-g-collapse">
+                            <div className="am-u-sm-6"> 
+                            </div>
+
+                            <div className="am-u-sm-3"> 
+                                <div className="am-input-group am-input-group-default">
+                                    <input type="text" className="am-form-field" placeholder="学生名字/学号" ref="name" />
+                                    <span className="am-input-group-btn">
+                                        <button className="am-btn am-btn-default" type="button" 
+                                        onClick={()=>{
+                                                let v = this.refs.name.value;
+                                                this.setState({
+                                                    search: Object.assign({},  this.state.search, {student_key_work: v})
+                                                });
+                                            }}>
+                                            <span className="am-icon-search"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="am-u-sm-12">
                         <div className="content-bg">
                             <Table 
                                 bordered

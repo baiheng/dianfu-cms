@@ -7,6 +7,7 @@ import SubjectStudent from './SubjectStudent'
 import ClassRecord from './ClassRecord'
 import ClassRecordLeave from './ClassRecordLeave'
 import ClassRecordNotAttend from './ClassRecordNotAttend'
+import QRCodeReact from './QRCodeReact'
 
 
 
@@ -15,7 +16,8 @@ class SubjectTimetableDetail extends React.Component {
         super(props, context);
         this.state = {
             detail: {},
-        }
+            modalType: "close",
+        };
     }
 
     getList(){
@@ -71,7 +73,7 @@ class SubjectTimetableDetail extends React.Component {
         let detail = this.state.detail;
 
         let class_week_name = (detail.start_week_name + " ~ " + detail.end_week_name);
-        let class_time_name = "";
+        let class_time_name_list = [];
         detail.class_time_json && detail.class_time_json.map((item) => {
             let weekday_name = "";
             for (let i of user.conf["curriculum.subject_timetable.weekday"]){
@@ -94,8 +96,9 @@ class SubjectTimetableDetail extends React.Component {
                     break;
                 }
             }
-            class_time_name += `${weekday_name} ${start_time} ~ ${end_time}; `
+            class_time_name_list.push(`${weekday_name} ${start_time} ~ ${end_time} `);
         });
+        let class_time_name = class_time_name_list.join("; ");
         return (
             <div>
                 <div className="am-g">
@@ -106,12 +109,17 @@ class SubjectTimetableDetail extends React.Component {
                             </div>
                         </div>
                     </div>
+
                     <div className="am-u-sm-12 am-margin-vertical">
                         <div className="am-g am-g-collapse">
 
                             <div className="am-u-sm-6"> 
-                                <button className="am-btn am-btn-default">
-                                    生成二维码
+                                <button className="am-btn am-btn-default" onClick={()=>{
+                                    this.setState({
+                                        modalType: "qrcode"
+                                    });
+                                }}>
+                                    签到二维码
                                 </button>
                                 <button className="am-btn am-btn-default am-margin-left-xs">
                                     导出上课学生
@@ -182,6 +190,41 @@ class SubjectTimetableDetail extends React.Component {
                         </Tabs>
                     </div>
                 </div>
+
+                <Modal
+                    visible={this.state.modalType == "qrcode"}
+                    title="签到二维码"
+                    onCancel={()=>{
+                        this.setState({
+                            modalType: "close",
+                        });
+                    }}
+                    onOk={() =>{
+                        this.setState({
+                            modalType: "close",
+                        });
+                    }}
+                    maskClosable={false}
+                    width="500px"
+                >
+                    <Tabs defaultActiveKey="0">
+                    {
+                        detail.class_time_json && detail.class_time_json.map((item, index) => {
+                            return (
+                                <Tabs.TabPane tab={class_time_name_list[index]} key={"" + index}>
+                                <div style={{
+                                    marginTop: "15px",
+                                    height: "300px",
+                                    paddingLeft: "100px"
+                                }}>
+                                    <QRCodeReact value={`http://127.0.0.1:3011/api/v1/curriculum/attend?weekday=${item.weekday}&start_time=${item.start_time}&end_time=${item.end_time}&subject_timetable_id=${detail.id}&type=0`} />
+                                </div>
+                            </Tabs.TabPane>
+                            );
+                        })
+                    }
+                    </Tabs>
+                </Modal>
 
             </div>
         )

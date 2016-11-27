@@ -118,7 +118,7 @@ class Academy extends React.Component {
                 if(data.ret == 0){
                     this.setState({
                         list: data.data.list,
-                        total: data.data.count,
+                        total: data.data.total,
                         editRecord: [],
                         selectedRowKeys: [],
                     });

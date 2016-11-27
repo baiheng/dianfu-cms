@@ -7,7 +7,7 @@ import { user } from 'config'
 const NewForm = Form.create()(
     (props) => {
         const { visible, onCancel, onOk, form, title, confirmLoading, 
-            course, tearch, academy, major, getMajorList, timeList, addTimeList, rmTimeList} = props;
+            course, tearch, academy, major, getMajorList, timeList, addTimeList, rmTimeList, semester} = props;
         const { getFieldDecorator } = form;
         return (
             <Modal
@@ -154,8 +154,8 @@ const NewForm = Form.create()(
                                             placeholder="请选择"
                                             getPopupContainer={() => document.getElementById('new-form-area')}>
                                         {
-                                            user.conf["curriculum.subject_timetable.semester"].map((item, index) => {
-                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            semester.map((item, index) => {
+                                                return <Select.Option value={"" + item.id} key={index}>{item.semester}</Select.Option>;
                                             })
                                         }
                                         </Select>
@@ -294,7 +294,7 @@ const NewForm = Form.create()(
 const EditForm = Form.create()(
     (props) => {
         const { visible, onCancel, onOk, form, title, confirmLoading, 
-            course, tearch, academy, major, getMajorList, editTimeList, addTimeList, rmTimeList, data} = props;
+            course, tearch, academy, major, getMajorList, editTimeList, addTimeList, rmTimeList, data, semester} = props;
         const { getFieldDecorator } = form;
         return (
             <Modal
@@ -373,11 +373,7 @@ const EditForm = Form.create()(
                                             placeholder="请选择"
                                             getPopupContainer={() => document.getElementById('edit-form-area')}
                                             disabled>
-                                        {
-                                            major.map((item, index) => {
-                                                return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
-                                            })
-                                        }
+                                            <Select.Option value={"" + data.major_id}>{data.major_name}</Select.Option>
                                         </Select>
                                     )}
                                 </Form.Item>
@@ -452,8 +448,8 @@ const EditForm = Form.create()(
                                             placeholder="请选择"
                                             getPopupContainer={() => document.getElementById('edit-form-area')}>
                                         {
-                                            user.conf["curriculum.subject_timetable.semester"].map((item, index) => {
-                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            semester.map((item, index) => {
+                                                return <Select.Option value={"" + item.id} key={index}>{item.semester}</Select.Option>;
                                             })
                                         }
                                         </Select>
@@ -502,7 +498,7 @@ const EditForm = Form.create()(
                                 let weekday = null;
                                 let start_time = null;
                                 let end_time = null;
-                                if(data.class_time_json[parentIndex]){
+                                if(data.class_time_json && data.class_time_json[parentIndex]){
                                     weekday = "" +  data.class_time_json[parentIndex].weekday;
                                     start_time = "" +  data.class_time_json[parentIndex].start_time;
                                     end_time = "" +  data.class_time_json[parentIndex].end_time;
@@ -624,8 +620,10 @@ class SubjectTimetable extends React.Component {
             selectedMajor: "-1",
             selectedGrade: "-1",
             selectedClass: "-1",
+            selectedCourse: "-1",
             timeList: [0],
             editTimeList: [],
+            semester: [],
         }
     }
 
@@ -634,6 +632,7 @@ class SubjectTimetable extends React.Component {
         this.getCourseList();
         this.getTearchList();
         this.getAcademyList();
+        this.getSemesterList();
     }
 
     componentDidMount() {
@@ -676,7 +675,7 @@ class SubjectTimetable extends React.Component {
                 if(data.ret == 0){
                     this.setState({
                         list: data.data.list,
-                        total: data.data.count,
+                        total: data.data.total,
                         editRecord: [],
                         selectedRowKeys: [],
                     });
@@ -709,6 +708,7 @@ class SubjectTimetable extends React.Component {
                         modalType: "close",
                     });
                     this.getList();
+                    this.newForm.resetFields();
                 }else{
                     user.showRequestError(data)
                 }
@@ -740,6 +740,7 @@ class SubjectTimetable extends React.Component {
                         modalType: "close",
                     });
                     this.getList();
+                    this.editForm.resetFields();
                 }else{
                     user.showRequestError(data)
                 }
@@ -783,6 +784,23 @@ class SubjectTimetable extends React.Component {
                 this.setState({
                     confirmLoading: false,
                 });
+            }.bind(this),
+        })
+    }
+
+    getSemesterList(){
+        $.ajax({
+            url: "/api/v1/system/all_settings",
+            type: "GET",
+            dataType: "json",
+            success: function(data){
+                if(data.ret == 0){
+                    this.setState({
+                        semester: data.data.list,
+                    });
+                }else{
+                    user.showRequestError(data)
+                }
             }.bind(this),
         })
     }
@@ -995,7 +1013,7 @@ class SubjectTimetable extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div className="am-u-sm-12 am-margin-vertical">
+                    <div className="am-u-sm-12 am-margin-top">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
                                 <button className="am-btn am-btn-default"
@@ -1035,29 +1053,117 @@ class SubjectTimetable extends React.Component {
                                     </button>
                                 </Popconfirm>
                             </div>
-
-                            <div className="am-u-sm-3"> 
-                                <div className="am-input-group am-input-group-default">
-                                    <input type="text" className="am-form-field" placeholder="课表名字" ref="name" />
-                                    <span className="am-input-group-btn">
-                                        <button className="am-btn am-btn-default" type="button" 
-                                        onClick={()=>{
-                                                let v = this.refs.name.value;
-                                                let q = Object.assign({}, this.props.location.query);
-                                                if(v == ""){
-                                                    delete q.like;
-                                                }else{
-                                                    q = Object.assign(q, {like: "name^" + v});
-                                                }
-                                                hashHistory.push({
-                                                    pathname: this.props.location.pathname,
-                                                    query: q, 
-                                                });
-                                            }}>
-                                            <span className="am-icon-search"></span>
-                                        </button>
-                                    </span>
-                                </div>
+                        </div>
+                    </div>
+                    <div className="am-u-sm-12 am-margin-vertical">
+                        <div className="am-g am-g-collapse">
+                            <div className="am-u-sm-12" id="search-form-area"> 
+                                <Select size="large" value={this.state.selectedAcademy}
+                                    getPopupContainer={() => document.getElementById('search-form-area')} 
+                                    style={{ width: 150 }} className="am-margin-right-xs" 
+                                    onChange={(value) => {
+                                        this.setState({
+                                            selectedAcademy: value,
+                                        });
+                                        this.getMajorList(value);
+                                    }}>
+                                    <Select.Option value={"-1"} key={-1}>选择学院</Select.Option>
+                                    {
+                                        this.state.academy.map((item, index) => {
+                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                        })
+                                    }
+                                </Select>
+                                <Select size="large" value={this.state.selectedMajor} 
+                                    getPopupContainer={() => document.getElementById('search-form-area')}
+                                    style={{ width: 150 }} className="am-margin-right-xs" 
+                                    onChange={(value) => {
+                                        this.setState({
+                                            selectedMajor: value
+                                        })
+                                    }}>
+                                    <Select.Option value={"-1"} key={-1}>选择专业</Select.Option>
+                                    {
+                                        this.state.major.map((item, index) => {
+                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                        })
+                                    }
+                                </Select>
+                                <Select size="large" value={this.state.selectedGrade} 
+                                    getPopupContainer={() => document.getElementById('search-form-area')}
+                                    style={{ width: 150 }} className="am-margin-right-xs" 
+                                    onChange={(value) => {
+                                        this.setState({
+                                            selectedGrade: value
+                                        })
+                                    }}>
+                                    <Select.Option value={"-1"} key={-1}>选择年级</Select.Option>
+                                    {
+                                        user.conf["profile.student.grade_id"].map((item, index) => {
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        })
+                                    }
+                                </Select>
+                                <Select size="large" value={this.state.selectedClass} 
+                                    getPopupContainer={() => document.getElementById('search-form-area')}
+                                    style={{ width: 150 }} className="am-margin-right-xs" 
+                                    onChange={(value) => {
+                                        this.setState({
+                                            selectedClass: value
+                                        })
+                                    }}>
+                                    <Select.Option value={"-1"} key={-1}>选择班级</Select.Option>
+                                    {
+                                        user.conf["profile.student.class_id"].map((item, index) => {
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        })
+                                    }
+                                </Select> 
+                                <Select size="large" value={this.state.selectedCourse}
+                                    getPopupContainer={() => document.getElementById('search-form-area')} 
+                                    style={{ width: 150 }} className="am-margin-right-xs" 
+                                    onChange={(value) => {
+                                        this.setState({
+                                            selectedCourse: value,
+                                        });
+                                        this.getMajorList(value);
+                                    }}>
+                                    <Select.Option value={"-1"} key={-1}>选择课程</Select.Option>
+                                    {
+                                        this.state.course.map((item, index) => {
+                                            return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
+                                        })
+                                    }
+                                </Select>
+                                <Button type="ghost" size="large" onClick={()=>{
+                                    let q = Object.assign({}, this.props.location.query);
+                                    q = Object.assign(q, {
+                                        class_id: this.state.selectedClass,
+                                        grade_id: this.state.selectedGrade,
+                                        major_id: this.state.selectedMajor,
+                                        academy_id: this.state.selectedAcademy,
+                                        course_id: this.state.selectedCourse
+                                    });
+                                    if(this.state.selectedClass == "-1"){
+                                        delete q.class_id;
+                                    };
+                                    if(this.state.selectedGrade == "-1"){
+                                        delete q.grade_id;
+                                    };
+                                    if(this.state.selectedMajor == "-1"){
+                                        delete q.major_id;
+                                    };
+                                    if(this.state.selectedAcademy == "-1"){
+                                        delete q.academy_id;
+                                    };
+                                    if(this.state.selectedCourse == "-1"){
+                                        delete q.course_id;
+                                    };
+                                    hashHistory.push({
+                                        pathname: this.props.location.pathname,
+                                        query: q, 
+                                    });
+                                }}>搜索</Button>
                             </div>
                         </div>
                     </div>
@@ -1137,7 +1243,6 @@ class SubjectTimetable extends React.Component {
                             let newValues = Object.assign(values, {class_time_json});
                             console.log(newValues);
                             this.newOpt(newValues);
-                            this.newForm.resetFields();
                             this.k = 0;
                         });
                     }}
@@ -1178,7 +1283,6 @@ class SubjectTimetable extends React.Component {
                             })
                             let newValues = Object.assign(values, {class_time_json});
                             this.editOpt(newValues);
-                            this.editForm.resetFields();
                             this.k = 0;
                         });
                     }}

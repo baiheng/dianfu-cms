@@ -66,7 +66,7 @@ class SubjectStudent extends React.Component {
                 if(data.ret == 0){
                     this.setState({
                         list: data.data.list,
-                        total: data.data.count,
+                        total: data.data.total,
                         editRecord: [],
                         selectedRowKeys: [],
                     });
@@ -237,20 +237,13 @@ class SubjectStudent extends React.Component {
 
                             <div className="am-u-sm-3"> 
                                 <div className="am-input-group am-input-group-default">
-                                    <input type="text" className="am-form-field" placeholder="学生名字" ref="name" />
+                                    <input type="text" className="am-form-field" placeholder="学生名字/学号" ref="name" />
                                     <span className="am-input-group-btn">
                                         <button className="am-btn am-btn-default" type="button" 
                                         onClick={()=>{
                                                 let v = this.refs.name.value;
-                                                let q = Object.assign({}, this.props.detail.id);
-                                                if(v == ""){
-                                                    delete q.like;
-                                                }else{
-                                                    q = Object.assign(q, {like: "name^" + v});
-                                                }
-                                                hashHistory.push({
-                                                    pathname: this.props.location.pathname,
-                                                    query: q, 
+                                                this.setState({
+                                                    search: Object.assign({},  this.state.search, {student_key_work: v})
                                                 });
                                             }}>
                                             <span className="am-icon-search"></span>

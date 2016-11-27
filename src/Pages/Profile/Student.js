@@ -673,7 +673,7 @@ class Student extends React.Component {
             success: function(data){
                 if(data.ret == 0){
                     this.setState({
-                        major: data.data,
+                        major: data.data.list,
                     });
                 }else{
                     user.showRequestError(data)
@@ -700,7 +700,7 @@ class Student extends React.Component {
                 if(data.ret == 0){
                     this.setState({
                         list: data.data.list,
-                        total: data.data.count,
+                        total: data.data.total,
                         editRecord: [],
                         selectedRowKeys: [],
                     });
@@ -733,6 +733,7 @@ class Student extends React.Component {
                         modalType: "close",
                     });
                     this.getList();
+                    this.newForm.resetFields();
                 }else{
                     user.showRequestError(data)
                 }
@@ -764,6 +765,7 @@ class Student extends React.Component {
                         modalType: "close",
                     });
                     this.getList();
+                    this.editForm.resetFields();
                 }else{
                     user.showRequestError(data)
                 }
@@ -1092,7 +1094,6 @@ class Student extends React.Component {
                             if (err) {
                                 return;
                             }
-                            this.newForm.resetFields();
                             let transform = {
                                 ...values,
                                 birthday: values.birthday.format('YYYY-MM-DD'),
@@ -1125,7 +1126,6 @@ class Student extends React.Component {
                             if (err) {
                                 return;
                             }
-                            this.editForm.resetFields();
                             let transform = {
                                 ...values,
                                 birthday: values.birthday.format('YYYY-MM-DD'),
