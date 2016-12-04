@@ -11,6 +11,7 @@ module.exports = {
                 require('./System'),
                 require('./Profile'),
                 require('./Curriculum'),
+                require('./Notification'),
             ])
         })
     },
