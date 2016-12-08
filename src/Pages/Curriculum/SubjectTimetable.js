@@ -137,7 +137,7 @@ const NewForm = Form.create()(
                         <Row gutter={16}>
                             <Col span={6}>
                                 <Form.Item label="上课地点">
-                                    {getFieldDecorator('localtion', {
+                                    {getFieldDecorator('location', {
                                         rules: [{ required: true, message: "不能为空" }],
                                         initialValue: "",
                                     })(
@@ -430,9 +430,9 @@ const EditForm = Form.create()(
                         <Row gutter={16}>
                             <Col span={6}>
                                 <Form.Item label="上课地点">
-                                    {getFieldDecorator('localtion', {
+                                    {getFieldDecorator('location', {
                                         rules: [{ required: true, message: "不能为空" }],
-                                        initialValue: data.localtion,
+                                        initialValue: data.location,
                                     })(
                                         <Input />
                                     )}
@@ -978,8 +978,8 @@ class SubjectTimetable extends React.Component {
             },
             {
                 title: '上课地点',
-                key: 'localtion',
-                dataIndex: 'localtion',
+                key: 'location',
+                dataIndex: 'location',
             },
             {
                 title: '备注',

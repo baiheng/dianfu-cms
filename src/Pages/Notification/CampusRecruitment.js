@@ -1,6 +1,6 @@
 import React from 'react'
 import { hashHistory } from 'react-router'
-import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm } from 'antd'
+import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, DatePicker } from 'antd'
 import { user } from 'config'
 
 
@@ -35,12 +35,40 @@ const NewForm = Form.create()(
                                 </Select>
                             )}
                         </Form.Item>
-                        <Form.Item label="url链接">
-                            {getFieldDecorator('url', {
+                        <Form.Item label="招聘内容">
+                            {getFieldDecorator('content', {
                                 rules: [{ required: true, message: "不能为空" }],
                                 initialValue: "",
                             })(
-                                <Input />
+                                <Input  type="textarea" autosize={{ minRows: 2, maxRows: 6 }} />
+                            )}
+                        </Form.Item>
+                        <Form.Item label="截止日期">
+                        {getFieldDecorator('deadline', {
+                            rules: [
+                                { type: 'object', required: true, message: '不能为空' },
+                            ],
+                            initialValue: moment("2016-10-31", "YYYY-MM-DD"),
+                            })(
+                                <DatePicker allowClear={false}
+                                    getCalendarContainer={() => document.getElementById('new-form-area')}/>
+                            )}
+                        </Form.Item>
+                        <Form.Item label="是否热门">
+                        {getFieldDecorator('flag', {
+                            rules: [
+                                { required: true, message: '不能为空' },
+                            ],
+                            initialValue: "0"
+                            })(
+                                <Select  placeholder="请选择"
+                                    getPopupContainer={() => document.getElementById('new-form-area')}>
+                                {
+                                    user.conf["notification.campus_recruitment.flag"].map((item, index) => {
+                                        return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                    })
+                                }
+                                </Select>
                             )}
                         </Form.Item>
                         <Form.Item label="是否发布">
@@ -89,7 +117,7 @@ const EditForm = Form.create()(
                             initialValue: "" + data.company_id
                             })(
                                 <Select  placeholder="请选择"
-                                    getPopupContainer={() => document.getElementById('new-form-area')}>
+                                    getPopupContainer={() => document.getElementById('edit-form-area')}>
                                 {
                                     company.map((item, index) => {
                                         return <Select.Option value={"" + item.id} key={index}>{item.name}</Select.Option>;
@@ -98,12 +126,40 @@ const EditForm = Form.create()(
                                 </Select>
                             )}
                         </Form.Item>
-                        <Form.Item label="url链接">
-                            {getFieldDecorator('url', {
+                        <Form.Item label="招聘内容">
+                            {getFieldDecorator('content', {
                                 rules: [{ required: true, message: "不能为空" }],
-                                initialValue: data.url,
+                                initialValue: data.content,
                             })(
-                                <Input />
+                                <Input  type="textarea" autosize={{ minRows: 2, maxRows: 6 }}/>
+                            )}
+                        </Form.Item>
+                        <Form.Item label="截止日期">
+                        {getFieldDecorator('deadline', {
+                            rules: [
+                                { type: 'object', required: true, message: '不能为空' },
+                            ],
+                            initialValue: moment(data.deadline, "YYYY-MM-DD"),
+                            })(
+                                <DatePicker allowClear={false}
+                                    getCalendarContainer={() => document.getElementById('edit-form-area')}/>
+                            )}
+                        </Form.Item>
+                        <Form.Item label="是否热门">
+                        {getFieldDecorator('flag', {
+                            rules: [
+                                { required: true, message: '不能为空' },
+                            ],
+                            initialValue: "" + data.flag
+                            })(
+                                <Select  placeholder="请选择"
+                                    getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                {
+                                    user.conf["notification.campus_recruitment.flag"].map((item, index) => {
+                                        return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                    })
+                                }
+                                </Select>
                             )}
                         </Form.Item>
                         <Form.Item label="是否发布">
@@ -114,7 +170,7 @@ const EditForm = Form.create()(
                             initialValue: "" + data.type
                             })(
                                 <Select  placeholder="请选择"
-                                    getPopupContainer={() => document.getElementById('new-form-area')}>
+                                    getPopupContainer={() => document.getElementById('edit-form-area')}>
                                 {
                                     user.conf["notification.campus_recruitment.type"].map((item, index) => {
                                         return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
@@ -331,14 +387,24 @@ class CampusRecruitment extends React.Component {
                 dataIndex: 'company_name',
             },
             {
-                title: '链接url',
-                key: 'url',
-                dataIndex: 'url',
+                title: '招聘内容',
+                key: 'content',
+                dataIndex: 'content',
+            },
+            {
+                title: '截止时间',
+                key: 'deadline',
+                dataIndex: 'deadline',
             },
             {
                 title: '发布时间',
                 key: 'create_time',
                 dataIndex: 'create_time',
+            },
+            {
+                title: '是否热门',
+                key: 'flag_name',
+                dataIndex: 'flag_name',
             },
             {
                 title: '当前是否生效',
@@ -453,7 +519,11 @@ class CampusRecruitment extends React.Component {
                                 return;
                             }
                             this.newForm.resetFields();
-                            this.newOpt(values);
+                            let transform = {
+                                ...values,
+                                deadline: values.deadline.format('YYYY-MM-DD'),
+                            };
+                            this.newOpt(transform);
                         });
                     }}
                     {...this.state}
@@ -478,7 +548,11 @@ class CampusRecruitment extends React.Component {
                                 return;
                             }
                             this.editForm.resetFields();
-                            this.editOpt(values);
+                            let transform = {
+                                ...values,
+                                deadline: values.deadline.format('YYYY-MM-DD'),
+                            };
+                            this.editOpt(transform);
                         });
                     }}
                     {...this.state}

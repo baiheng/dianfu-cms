@@ -1,12 +1,13 @@
 import React from 'react'
 import { hashHistory } from 'react-router'
-import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, Upload, message } from 'antd'
+import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, Upload, message, Card } from 'antd'
 import { user } from 'config'
 
 
 const NewForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, title, confirmLoading, sender, beforeUpload, imgUploadChange, newImgUrl} = props;
+        const { visible, onCancel, onOk, form, title, confirmLoading, sender, beforeUpload, 
+            logoUploadChange, newImgUrl, imgUrl, imgUploadChange, delImgUrl} = props;
         const { getFieldDecorator } = form;
         return (
             <Modal
@@ -30,14 +31,13 @@ const NewForm = Form.create()(
                                 return beforeUpload(file);
                             }}
                             onChange={(info) => {
-                                imgUploadChange(info);
+                                logoUploadChange(info);
                             }}
                           >
-                            <Button type="ghost">
-                                <Icon type="plus" />
+                            <Button type="ghost" className="am-margin-left-xs" style={{width: "100px", height: "100px"}}>
+                                上传企业logo
                             </Button>
                         </Upload>
-                        <small>上传企业logo</small>
                     </div> :
                     <div>
                         <img src={newImgUrl} height="100" width="100" />
@@ -67,10 +67,51 @@ const NewForm = Form.create()(
                                 { required: true, message: '不能为空' },
                             ],
                             })(
-                                <Input placeholder="空格分隔多个标签" />
+                                <Input placeholder="|分隔多个标签" />
                             )}
                         </Form.Item>
                     </Form>
+                </div>
+                <div>
+                    {
+                        imgUrl.map((item, index) =>{
+                            return (
+                                <div key={index} 
+                                    style={{
+                                        display: "inline-block", 
+                                        width: "200xp", 
+                                        height: "135px", 
+                                        border: "1px dashed #d9d9d9",
+                                        marginLeft: "10px",
+                                        marginBottom: "10px",
+                                    }}>
+                                    <img src={item} width="200" height="100" />
+                                    <br/>
+                                    <Button type="ghost" onClick={() => {
+                                        delImgUrl(index);
+                                    }}>
+                                        <Icon type="delete" />
+                                    </Button>
+                                </div>
+                            );
+                        })
+                    }
+                    <Upload
+                        name="file"
+                        showUploadList={false}
+                        action="/api/v1/system/img_upload"
+                        accept="image/*"
+                        beforeUpload={(file) => {
+                            return beforeUpload(file);
+                        }}
+                        onChange={(info) => {
+                            imgUploadChange(info);
+                        }}
+                      >
+                        <Button type="ghost" className="am-margin-left-xs">
+                            添加公司图片
+                        </Button>
+                    </Upload>
                 </div>
             </Modal>
     );
@@ -79,7 +120,8 @@ const NewForm = Form.create()(
 
 const EditForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, title, confirmLoading, data, beforeUpload, imgUploadChange, newImgUrl} = props;
+        const { visible, onCancel, onOk, form, title, confirmLoading, data, 
+            beforeUpload, logoUploadChange, newImgUrl, imgUrl, imgUploadChange, delImgUrl} = props;
         const { getFieldDecorator } = form;
         return (
             <Modal
@@ -101,10 +143,10 @@ const EditForm = Form.create()(
                             return beforeUpload(file);
                         }}
                         onChange={(info) => {
-                            imgUploadChange(info);
+                            logoUploadChange(info);
                         }}
                       >
-                        <Button type="ghost" className="am-margin-left-xs">
+                        <Button type="ghost" className="am-margin-left-xs" style={{width: "100px", height: "100px"}}>
                             更换logo
                         </Button>
                     </Upload>
@@ -134,10 +176,51 @@ const EditForm = Form.create()(
                             ],
                             initialValue: data.label_name,
                             })(
-                                <Input placeholder="空格分隔多个标签" />
+                                <Input placeholder="|分隔多个标签" />
                             )}
                         </Form.Item>
                     </Form>
+                </div>
+                <div>
+                    {
+                        imgUrl.map((item, index) =>{
+                            return (
+                                <div key={index} 
+                                    style={{
+                                        display: "inline-block", 
+                                        width: "200xp", 
+                                        height: "135px", 
+                                        border: "1px dashed #d9d9d9",
+                                        marginLeft: "10px",
+                                        marginBottom: "10px",
+                                    }}>
+                                    <img src={item} width="200" height="100" />
+                                    <br/>
+                                    <Button type="ghost" onClick={() => {
+                                        delImgUrl(index);
+                                    }}>
+                                        <Icon type="delete" />
+                                    </Button>
+                                </div>
+                            );
+                        })
+                    }
+                    <Upload
+                        name="file"
+                        showUploadList={false}
+                        action="/api/v1/system/img_upload"
+                        accept="image/*"
+                        beforeUpload={(file) => {
+                            return beforeUpload(file);
+                        }}
+                        onChange={(info) => {
+                            imgUploadChange(info);
+                        }}
+                      >
+                        <Button type="ghost" className="am-margin-left-xs">
+                            添加公司图片
+                        </Button>
+                    </Upload>
                 </div>
             </Modal>
     );
@@ -157,6 +240,7 @@ class Company extends React.Component {
             editRecord: {},
             selectedRowKeys: [],
             newImgUrl: "",
+            imgUrl: [],
         }
     }
 
@@ -330,7 +414,7 @@ class Company extends React.Component {
         return true;
     }
 
-    imgUploadChange(info) {
+    logoUploadChange(info) {
         if (info.file.status === 'done') {
             if(info.file.response.ret == 0){
                 this.setState({
@@ -349,6 +433,33 @@ class Company extends React.Component {
             })
             message.error(`${info.file.name} file upload failed.`);
         }
+    }
+
+    imgUploadChange(info) {
+        if (info.file.status === 'done') {
+            if(info.file.response.ret == 0){
+                this.setState({
+                    imgUrl: this.state.imgUrl.concat(info.file.response.data)
+                })
+            }else{
+                this.setState({
+                    imgUrl: []
+                })
+                user.showRequestError(info.file.response)
+            }
+        }
+        if (info.file.status === 'error') {
+            this.setState({
+                imgUrl: []
+            })
+            message.error(`${info.file.name} file upload failed.`);
+        }
+    }
+
+    delImgUrl(index){
+        this.setState({
+            imgUrl: this.state.imgUrl.filter((item, i) => {return i != index})
+        })
     }
 
     render(){
@@ -399,6 +510,7 @@ class Company extends React.Component {
                                         this.setState({
                                             modalType: "add",
                                             newImgUrl: "",
+                                            imgUrl: [],
                                         });
                                     }}
                                 >
@@ -413,6 +525,7 @@ class Company extends React.Component {
                                         this.setState({
                                             modalType: "edit",
                                             newImgUrl: this.state.editRecord.logo_url,
+                                            imgUrl: this.state.editRecord.img_json == ""? []: this.state.editRecord.img_json,
                                         });
                                     }}
                                 >
@@ -515,14 +628,20 @@ class Company extends React.Component {
                             if(this.state.newImgUrl == ""){
                                 return user.showMsg("请上传公司logo");
                             }
-                            values.label_json = values.label_name.trim().split(" ");
+                            if(this.state.imgUrl.length == 0){
+                                return user.showMsg("请上传公司图片");
+                            }
+                            values.label_json = values.label_name.trim().split("|").map((item)=>{return item.trim()})
                             values.logo_url = this.state.newImgUrl;
+                            values.img_json = this.state.imgUrl;
                             delete values.label_name;
                             this.newOpt(values);
                         });
                     }}
                     beforeUpload={this.beforeUpload}
+                    logoUploadChange={this.logoUploadChange.bind(this)}
                     imgUploadChange={this.imgUploadChange.bind(this)}
+                    delImgUrl={this.delImgUrl.bind(this)}
                     {...this.state}
                 />
 
@@ -547,14 +666,20 @@ class Company extends React.Component {
                             if(this.state.newImgUrl == ""){
                                 return user.showMsg("请上传公司logo");
                             }
-                            values.label_json = values.label_name.trim().split(" ");
+                            if(this.state.imgUrl.length == 0){
+                                return user.showMsg("请上传公司图片");
+                            }
+                            values.label_json = values.label_name.trim().split("|").map((item)=>{return item.trim()})
                             values.logo_url = this.state.newImgUrl;
+                            values.img_json = this.state.imgUrl;
                             delete values.label_name;
                             this.editOpt(values);
                         });
                     }}
                     beforeUpload={this.beforeUpload}
+                    logoUploadChange={this.logoUploadChange.bind(this)}
                     imgUploadChange={this.imgUploadChange.bind(this)}
+                    delImgUrl={this.delImgUrl.bind(this)}
                     {...this.state}
                 />
 
