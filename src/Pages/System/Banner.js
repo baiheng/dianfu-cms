@@ -1,13 +1,12 @@
 import React from 'react'
 import { hashHistory } from 'react-router'
-import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, Upload, message, Card } from 'antd'
+import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, Upload, message,Row, Col } from 'antd'
 import { user } from 'config'
 
 
 const NewForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, title, confirmLoading, sender, beforeUpload, 
-            logoUploadChange, newImgUrl, imgUrl, imgUploadChange, delImgUrl} = props;
+        const { visible, onCancel, onOk, form, title, confirmLoading, beforeUpload, imgUrl, imgUploadChange} = props;
         const { getFieldDecorator } = form;
         return (
             <Modal
@@ -19,7 +18,7 @@ const NewForm = Form.create()(
                 maskClosable={false}
             >
                 {
-                    newImgUrl == ""? 
+                    imgUrl == ""? 
                     <div>
                         <Upload
                             className="am-margin-right-xs"
@@ -31,87 +30,91 @@ const NewForm = Form.create()(
                                 return beforeUpload(file);
                             }}
                             onChange={(info) => {
-                                logoUploadChange(info);
+                                imgUploadChange(info);
                             }}
                           >
-                            <Button type="ghost" className="am-margin-left-xs" style={{width: "100px", height: "100px"}}>
-                                上传企业logo
+                            <Button type="ghost" className="am-margin-left-xs" style={{width: "200px", height: "100px"}}>
+                                上传横幅
                             </Button>
                         </Upload>
                     </div> :
                     <div>
-                        <img src={newImgUrl} height="100" width="100" />
+                        <img src={imgUrl} height="100" width="200" />
                     </div> 
                 }
                 <div id="new-form-area" className="am-margin-top">
                     <Form vertical>
-                        <Form.Item label="公司名字">
-                            {getFieldDecorator('name', {
+                        <Form.Item label="横幅名字">
+                            {getFieldDecorator('title', {
                                 rules: [{ required: true, message: "不能为空" }],
                                 initialValue: "",
                             })(
                                 <Input />
                             )}
                         </Form.Item>
-                        <Form.Item label="描述">
-                            {getFieldDecorator('description', {
-                                rules: [{ required: true, message: "不能为空" }],
-                                initialValue: "",
-                            })(
-                                <Input  type="textarea" autosize={{ minRows: 3, maxRows: 8 }} />
-                            )}
-                        </Form.Item>
-                        <Form.Item label="标签">
-                        {getFieldDecorator('label_name', {
+                        <Form.Item label="发布页面">
+                        {getFieldDecorator('flag', {
                             rules: [
                                 { required: true, message: '不能为空' },
                             ],
                             })(
-                                <Input placeholder="|分隔多个标签" />
+                                <Select  placeholder="请选择"
+                                    getPopupContainer={() => document.getElementById('new-form-area')}>
+                                {
+                                    user.conf["system.banner.flag"].map((item, index) => {
+                                        return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                    })
+                                }
+                                </Select>
+                            )}
+                        </Form.Item>
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Form.Item label="链接文章类型">
+                                {getFieldDecorator('link_type', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    })(
+                                        <Select  placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('new-form-area')}>
+                                        {
+                                            user.conf["system.banner.link_type"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item label="链接文章ID">
+                                    {getFieldDecorator('link_id', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: "",
+                                    })(
+                                        <Input placeholder="请把对应文章ID填写上"/>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Form.Item label="是否发布">
+                        {getFieldDecorator('type', {
+                            rules: [
+                                { required: true, message: '不能为空' },
+                            ],
+                            })(
+                                <Select  placeholder="请选择"
+                                    getPopupContainer={() => document.getElementById('new-form-area')}>
+                                {
+                                    user.conf["system.banner.type"].map((item, index) => {
+                                        return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                    })
+                                }
+                                </Select>
                             )}
                         </Form.Item>
                     </Form>
-                </div>
-                <div>
-                    {
-                        imgUrl.map((item, index) =>{
-                            return (
-                                <div key={index} 
-                                    style={{
-                                        display: "inline-block", 
-                                        width: "200xp", 
-                                        height: "135px", 
-                                        border: "1px dashed #d9d9d9",
-                                        marginLeft: "10px",
-                                        marginBottom: "10px",
-                                    }}>
-                                    <img src={item} width="200" height="100" />
-                                    <br/>
-                                    <Button type="ghost" onClick={() => {
-                                        delImgUrl(index);
-                                    }}>
-                                        <Icon type="delete" />
-                                    </Button>
-                                </div>
-                            );
-                        })
-                    }
-                    <Upload
-                        name="file"
-                        showUploadList={false}
-                        action="/api/v1/system/img_upload"
-                        accept="image/*"
-                        beforeUpload={(file) => {
-                            return beforeUpload(file);
-                        }}
-                        onChange={(info) => {
-                            imgUploadChange(info);
-                        }}
-                      >
-                        <Button type="ghost" className="am-margin-left-xs">
-                            添加公司图片
-                        </Button>
-                    </Upload>
                 </div>
             </Modal>
     );
@@ -120,8 +123,7 @@ const NewForm = Form.create()(
 
 const EditForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, title, confirmLoading, data, 
-            beforeUpload, logoUploadChange, newImgUrl, imgUrl, imgUploadChange, delImgUrl} = props;
+        const { visible, onCancel, onOk, form, title, confirmLoading, data, beforeUpload, imgUrl, imgUploadChange} = props;
         const { getFieldDecorator } = form;
         return (
             <Modal
@@ -133,78 +135,7 @@ const EditForm = Form.create()(
                 maskClosable={false}
             >
                 <div>
-                    <img src={newImgUrl} height="100" width="100" />
-                    <Upload
-                        name="file"
-                        showUploadList={false}
-                        action="/api/v1/system/img_upload"
-                        accept="image/*"
-                        beforeUpload={(file) => {
-                            return beforeUpload(file);
-                        }}
-                        onChange={(info) => {
-                            logoUploadChange(info);
-                        }}
-                      >
-                        <Button type="ghost" className="am-margin-left-xs" style={{width: "100px", height: "100px"}}>
-                            更换logo
-                        </Button>
-                    </Upload>
-                </div>
-                <div id="edit-form-area" className="am-margin-top">
-                    <Form vertical>
-                        <Form.Item label="公司名字">
-                            {getFieldDecorator('name', {
-                                rules: [{ required: true, message: "不能为空" }],
-                                initialValue: "" + data.name,
-                            })(
-                                <Input />
-                            )}
-                        </Form.Item>
-                        <Form.Item label="描述">
-                            {getFieldDecorator('description', {
-                                rules: [{ required: true, message: "不能为空" }],
-                                initialValue: "" + data.description,
-                            })(
-                                <Input  type="textarea" autosize={{ minRows: 3, maxRows: 8 }} />
-                            )}
-                        </Form.Item>
-                        <Form.Item label="标签">
-                        {getFieldDecorator('label_name', {
-                            rules: [
-                                { required: true, message: '不能为空' },
-                            ],
-                            initialValue: data.label_name,
-                            })(
-                                <Input placeholder="|分隔多个标签" />
-                            )}
-                        </Form.Item>
-                    </Form>
-                </div>
-                <div>
-                    {
-                        imgUrl.map((item, index) =>{
-                            return (
-                                <div key={index} 
-                                    style={{
-                                        display: "inline-block", 
-                                        width: "200xp", 
-                                        height: "135px", 
-                                        border: "1px dashed #d9d9d9",
-                                        marginLeft: "10px",
-                                        marginBottom: "10px",
-                                    }}>
-                                    <img src={item} width="200" height="100" />
-                                    <br/>
-                                    <Button type="ghost" onClick={() => {
-                                        delImgUrl(index);
-                                    }}>
-                                        <Icon type="delete" />
-                                    </Button>
-                                </div>
-                            );
-                        })
-                    }
+                    <img src={imgUrl} height="100" width="200" />
                     <Upload
                         name="file"
                         showUploadList={false}
@@ -217,10 +148,87 @@ const EditForm = Form.create()(
                             imgUploadChange(info);
                         }}
                       >
-                        <Button type="ghost" className="am-margin-left-xs">
-                            添加公司图片
+                        <Button type="ghost" className="am-margin-left-xs" style={{width: "200px", height: "100px"}}>
+                            更换图片
                         </Button>
                     </Upload>
+                </div>
+                <div id="edit-form-area" className="am-margin-top">
+                    <Form vertical>
+                        <Form.Item label="横幅名字">
+                            {getFieldDecorator('title', {
+                                rules: [{ required: true, message: "不能为空" }],
+                                initialValue: data.title,
+                            })(
+                                <Input />
+                            )}
+                        </Form.Item>
+                        <Form.Item label="发布页面">
+                        {getFieldDecorator('flag', {
+                            rules: [
+                                { required: true, message: '不能为空' },
+                            ],
+                                initialValue: "" + data.flag,
+                            })(
+                                <Select  placeholder="请选择"
+                                    getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                {
+                                    user.conf["system.banner.flag"].map((item, index) => {
+                                        return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                    })
+                                }
+                                </Select>
+                            )}
+                        </Form.Item>
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Form.Item label="链接文章类型">
+                                {getFieldDecorator('link_type', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: "" + data.link_type,
+                                    })(
+                                        <Select  placeholder="请选择"
+                                            getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                        {
+                                            user.conf["system.banner.link_type"].map((item, index) => {
+                                                return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                            })
+                                        }
+                                        </Select>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item label="链接文章ID">
+                                    {getFieldDecorator('link_id', {
+                                        rules: [{ required: true, message: "不能为空" }],
+                                        initialValue: "" + data.link_id,
+                                    })(
+                                        <Input placeholder="请把对应文章ID填写上"/>
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Form.Item label="是否发布">
+                        {getFieldDecorator('type', {
+                            rules: [
+                                { required: true, message: '不能为空' },
+                            ],
+                                initialValue: "" + data.type,
+                            })(
+                                <Select  placeholder="请选择"
+                                    getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                {
+                                    user.conf["system.banner.type"].map((item, index) => {
+                                        return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                    })
+                                }
+                                </Select>
+                            )}
+                        </Form.Item>
+                    </Form>
                 </div>
             </Modal>
     );
@@ -228,7 +236,7 @@ const EditForm = Form.create()(
 );
 
 
-class Company extends React.Component {
+class Banner extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -239,8 +247,7 @@ class Company extends React.Component {
             confirmLoading: false,
             editRecord: {},
             selectedRowKeys: [],
-            newImgUrl: "",
-            imgUrl: [],
+            imgUrl: "",
         }
     }
 
@@ -272,7 +279,7 @@ class Company extends React.Component {
 
     getList(){
         $.ajax({
-            url: "/api/v1/notification/company",
+            url: "/api/v1/system/banner",
             type: "GET",
             data: Object.assign({
                 start: 0,
@@ -306,9 +313,9 @@ class Company extends React.Component {
 
     newOpt(data){
         $.ajax({
-            url: "/api/v1/notification/company",
+            url: "/api/v1/system/banner",
             type: "POST",
-            data: JSON.stringify(data),
+            data: data,
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -336,11 +343,9 @@ class Company extends React.Component {
 
     editOpt(data){
         $.ajax({
-            url: "/api/v1/notification/company",
+            url: "/api/v1/system/banner",
             type: "PUT",
-            data: JSON.stringify(
-                Object.assign(this.state.editRecord, data)
-            ),
+            data: Object.assign(this.state.editRecord, data),
             dataType: "json",
             beforeSend: function(){
                 this.setState({
@@ -372,7 +377,7 @@ class Company extends React.Component {
             return;
         }
         $.ajax({
-            url: "/api/v1/notification/company",
+            url: "/api/v1/system/banner",
             type: "DELETE",
             data: this.state.editRecord,
             dataType: "json",
@@ -414,52 +419,25 @@ class Company extends React.Component {
         return true;
     }
 
-    logoUploadChange(info) {
-        if (info.file.status === 'done') {
-            if(info.file.response.ret == 0){
-                this.setState({
-                    newImgUrl: info.file.response.data
-                })
-            }else{
-                this.setState({
-                    newImgUrl: ""
-                })
-                user.showRequestError(info.file.response)
-            }
-        }
-        if (info.file.status === 'error') {
-            this.setState({
-                newImgUrl: ""
-            })
-            message.error(`${info.file.name} file upload failed.`);
-        }
-    }
-
     imgUploadChange(info) {
         if (info.file.status === 'done') {
             if(info.file.response.ret == 0){
                 this.setState({
-                    imgUrl: this.state.imgUrl.concat(info.file.response.data)
+                    imgUrl: info.file.response.data
                 })
             }else{
                 this.setState({
-                    imgUrl: []
+                    imgUrl: ""
                 })
                 user.showRequestError(info.file.response)
             }
         }
         if (info.file.status === 'error') {
             this.setState({
-                imgUrl: []
+                imgUrl: ""
             })
             message.error(`${info.file.name} file upload failed.`);
         }
-    }
-
-    delImgUrl(index){
-        this.setState({
-            imgUrl: this.state.imgUrl.filter((item, i) => {return i != index})
-        })
     }
 
     render(){
@@ -469,28 +447,43 @@ class Company extends React.Component {
                 dataIndex: 'id',
             },
             {
-                title: '图标',
-                key: 'logo_url',
-                width: "120px",
+                title: '图片',
+                key: 'img_url',
+                width: "220px",
                 render: (text, record) => (
-                    <img src={record.logo_url} height="100" width="100" />
+                    <img src={record.img_url} height="100" width="200" />
                 ),
             },
             {
-                title: '公司名字',
-                key: 'name',
-                dataIndex: 'name',
+                title: '标题',
+                key: 'title',
+                dataIndex: 'title',
             },
             {
-                title: '公司描述',
-                key: 'description',
-                dataIndex: 'description',
+                title: '发布时间',
+                key: 'create_time',
+                dataIndex: 'create_time',
             },
             {
-                title: '公司标签',
-                key: 'label_name',
-                dataIndex: 'label_name',
-            }
+                title: '链接文章类型',
+                key: 'link_type_name',
+                dataIndex: 'link_type_name',
+            },
+            {
+                title: '链接文章ID',
+                key: 'link_id',
+                dataIndex: 'link_id',
+            },
+            {
+                title: '发布栏',
+                key: 'flag_name',
+                dataIndex: 'flag_name',
+            },
+            {
+                title: '当前是否生效',
+                key: 'type_name',
+                dataIndex: 'type_name',
+            },
             ]; 
         return (
             <div>
@@ -498,7 +491,7 @@ class Company extends React.Component {
                     <div className="am-u-sm-12 am-margin-top">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
-                                <h2>校园招聘 / 企业列表</h2>
+                                <h2>系统管理 / 横幅列表</h2>
                             </div>
                         </div>
                     </div>
@@ -509,8 +502,7 @@ class Company extends React.Component {
                                     onClick={()=>{
                                         this.setState({
                                             modalType: "add",
-                                            newImgUrl: "",
-                                            imgUrl: [],
+                                            imgUrl: "",
                                         });
                                     }}
                                 >
@@ -524,8 +516,7 @@ class Company extends React.Component {
                                         }
                                         this.setState({
                                             modalType: "edit",
-                                            newImgUrl: this.state.editRecord.logo_url,
-                                            imgUrl: this.state.editRecord.img_json == ""? []: this.state.editRecord.img_json,
+                                            imgUrl: this.state.editRecord.img_url,
                                         });
                                     }}
                                 >
@@ -540,7 +531,7 @@ class Company extends React.Component {
 
                             <div className="am-u-sm-3"> 
                                 <div className="am-input-group am-input-group-default">
-                                    <input type="text" className="am-form-field" placeholder="企业名字" ref="name" />
+                                    <input type="text" className="am-form-field" placeholder="标题名字" ref="name" />
                                     <span className="am-input-group-btn">
                                         <button className="am-btn am-btn-default" type="button" 
                                         onClick={()=>{
@@ -549,7 +540,7 @@ class Company extends React.Component {
                                                 if(v == ""){
                                                     delete q.like;
                                                 }else{
-                                                    q = Object.assign(q, {like: "name^" + v});
+                                                    q = Object.assign(q, {like: "title^" + v});
                                                 }
                                                 hashHistory.push({
                                                     pathname: this.props.location.pathname,
@@ -618,30 +609,19 @@ class Company extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    title="新建企业"
+                    title="新建横幅"
                     confirmLoading={this.state.confirmLoading}
                     onOk={() =>{
                         this.newForm.validateFields((err, values) => {
                             if (err) {
                                 return;
                             }
-                            if(this.state.newImgUrl == ""){
-                                return user.showMsg("请上传公司logo");
-                            }
-                            if(this.state.imgUrl.length == 0){
-                                return user.showMsg("请上传公司图片");
-                            }
-                            values.label_json = values.label_name.trim().split("|").map((item)=>{return item.trim()})
-                            values.logo_url = this.state.newImgUrl;
-                            values.img_json = this.state.imgUrl;
-                            delete values.label_name;
+                            values.img_url = this.state.imgUrl;
                             this.newOpt(values);
                         });
                     }}
                     beforeUpload={this.beforeUpload}
-                    logoUploadChange={this.logoUploadChange.bind(this)}
                     imgUploadChange={this.imgUploadChange.bind(this)}
-                    delImgUrl={this.delImgUrl.bind(this)}
                     {...this.state}
                 />
 
@@ -655,7 +635,7 @@ class Company extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    title="修改企业"
+                    title="修改横幅"
                     confirmLoading={this.state.confirmLoading}
                     data={this.state.editRecord}
                     onOk={() =>{
@@ -663,23 +643,12 @@ class Company extends React.Component {
                             if (err) {
                                 return;
                             }
-                            if(this.state.newImgUrl == ""){
-                                return user.showMsg("请上传公司logo");
-                            }
-                            if(this.state.imgUrl.length == 0){
-                                return user.showMsg("请上传公司图片");
-                            }
-                            values.label_json = values.label_name.trim().split("|").map((item)=>{return item.trim()})
-                            values.logo_url = this.state.newImgUrl;
-                            values.img_json = this.state.imgUrl;
-                            delete values.label_name;
+                            values.img_url = this.state.imgUrl;
                             this.editOpt(values);
                         });
                     }}
                     beforeUpload={this.beforeUpload}
-                    logoUploadChange={this.logoUploadChange.bind(this)}
                     imgUploadChange={this.imgUploadChange.bind(this)}
-                    delImgUrl={this.delImgUrl.bind(this)}
                     {...this.state}
                 />
 
@@ -688,4 +657,4 @@ class Company extends React.Component {
     }
 }
  
-module.exports = Company
+module.exports = Banner

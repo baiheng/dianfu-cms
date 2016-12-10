@@ -581,7 +581,7 @@ class TraineeRecruitment extends React.Component {
             {
                 title: '图标',
                 key: 'logo_url',
-                width: "150px",
+                width: "120px",
                 render: (text, record) => (
                     <img src={record.logo_url} height="100" width="100" />
                 ),

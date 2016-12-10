@@ -278,7 +278,12 @@ class PartTime extends React.Component {
             confirmLoading: false,
             editRecord: {},
             selectedRowKeys: [],
-        }
+            joinList: [],
+            joinTotal: 0,
+        };
+        this.joinId = 0;
+        this.joinStart = 0;
+        this.joinEnd = 50;
     }
 
     componentWillMount() {
@@ -438,6 +443,58 @@ class PartTime extends React.Component {
         })
     }
  
+    getJoinPartTimeList(){
+        $.ajax({
+            url: "/api/v1/notification/join_part_time",
+            type: "GET",
+            data: {
+                part_time_id: this.joinId,
+                start: this.joinStart,
+                end: this.joinEnd,
+            },
+            dataType: "json",
+            beforeSend: function(){
+                this.setState({
+                    tableLoading: true,
+                })
+            }.bind(this),
+            success: function(data){
+                if(data.ret == 0){
+                    this.setState({
+                        joinList: data.data.list,
+                        joinTotal: data.data.total,
+                    });
+                }else{
+                    user.showRequestError(data)
+                }
+            }.bind(this),
+            complete: function(){
+                this.setState({
+                    tableLoading: false,
+                });
+            }.bind(this),
+        })
+    }
+ 
+    editJoinPartTimeList(id, type){
+        $.ajax({
+            url: "/api/v1/notification/join_part_time",
+            type: "PUT",
+            data: {
+                id: id,
+                type: type,
+            },
+            dataType: "json",
+            success: function(data){
+                if(data.ret == 0){
+                    this.getJoinPartTimeList();
+                }else{
+                    user.showRequestError(data)
+                }
+            }.bind(this),
+        })
+    }
+
     render(){
         const columns = [{
                 title: 'ID',
@@ -485,10 +542,61 @@ class PartTime extends React.Component {
                 dataIndex: 'create_time',
             },
             {
+                title: '申请学生',
+                key: 'student',
+                dataIndex: 'student',
+                render: (text, record, index) => {
+                    return <a onClick={()=>{
+                        this.setState({
+                            modalType: "joinPartTime",
+                        });
+                        this.joinStart = 0;
+                        this.joinEnd = 50;
+                        this.joinId = record.id;
+                        this.getJoinPartTimeList();
+                    }
+                    }>查看</a>
+                }
+            },
+            {
                 title: '当前是否生效',
                 key: 'type_name',
                 dataIndex: 'type_name',
             }
+            ]; 
+        const innerColumns = [{
+                title: 'ID',
+                key: "id",
+                dataIndex: 'id',
+            },
+            {
+                title: '学号',
+                key: 'student_number',
+                dataIndex: 'student_number',
+            },
+            {
+                title: '姓名',
+                key: 'student_name',
+                dataIndex: 'student_name',
+            },
+            {
+                title: '操作',
+                key: 'type',
+                dataIndex: 'type',
+                render: (text, record, index) => {
+                    return (
+                        <Radio.Group value={"" + record.type} onChange={(e)=>{
+                            this.editJoinPartTimeList(record.id, e.target.value);
+                        }}>
+                        {
+                            user.conf["notification.join_part_time.type"].map((item, i) => {
+                                return <Radio.Button value={"" + item[0]} key={i}>{"" + item[1]}</Radio.Button>
+                            })
+                        }
+                        </Radio.Group>
+                    );
+                },
+            },
             ]; 
         return (
             <div>
@@ -651,6 +759,46 @@ class PartTime extends React.Component {
                     {...this.state}
                 />
 
+                <Modal
+                    visible={this.state.modalType == "joinPartTime"}
+                    title="申请学生"
+                    onCancel={()=>{
+                        this.setState({
+                            modalType: "close",
+                        });
+                    }}
+                    onOk={() =>{
+                        this.setState({
+                            modalType: "close",
+                        });
+                    }}
+                    maskClosable={false}
+                    width="600px"
+                >
+                    <div className="am-g">
+                        <div className="am-u-sm-12">
+                            <div className="content-bg">
+                                <Table 
+                                    bordered
+                                    filterMultiple={false}
+                                    columns={innerColumns} 
+                                    dataSource={this.state.joinList} 
+                                    loading={this.state.tableLoading} 
+                                    pagination={{
+                                        total: this.state.joinTotal,
+                                        pageSize: 50,
+                                        onChange: (p) => {
+                                            let start = (p - 1) * 50;
+                                            let end = start + 50;
+                                            this.getJoinPartTimeList(record.id, start, end);
+                                        }
+                                    }}
+
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </Modal>
             </div>
         )
     }

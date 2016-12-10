@@ -27,6 +27,10 @@ module.exports = {
             component: require("./PartTime"), 
         },
         {
+            path: 'join_part_time',
+            component: require("./JoinPartTime"), 
+        },
+        {
             path: 'job_guide',
             component: require("./JobGuide"), 
         },

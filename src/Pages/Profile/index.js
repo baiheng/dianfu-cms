@@ -6,5 +6,13 @@ module.exports = {
             path: 'student',
             component: require("./Student"), 
         },
+        {
+            path: 'resume',
+            component: require("./Resume"), 
+        },
+        {
+            path: 'feedback',
+            component: require("./Feedback"), 
+        },
     ],
 }

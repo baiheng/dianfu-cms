@@ -107,16 +107,6 @@ const NewForm = Form.create()(
                                     )}
                                 </Form.Item>
                             </Col>
-                            <Col span={6}>
-                                <Form.Item label="手机号码">
-                                    {getFieldDecorator('phone', {
-                                        rules: [{ required: true, message: "不能为空" }],
-                                        initialValue: "",
-                                    })(
-                                        <Input />
-                                    )}
-                                </Form.Item>
-                            </Col>
                         </Row>
                         <Row>
                             <Col span={24}>
@@ -365,16 +355,6 @@ const EditForm = Form.create()(
                                     {getFieldDecorator('nationality', {
                                         rules: [{ required: true, message: "不能为空" }],
                                         initialValue: data.nationality,
-                                    })(
-                                        <Input />
-                                    )}
-                                </Form.Item>
-                            </Col>
-                            <Col span={6}>
-                                <Form.Item label="手机号码">
-                                    {getFieldDecorator('phone', {
-                                        rules: [{ required: true, message: "不能为空" }],
-                                        initialValue: data.phone,
                                     })(
                                         <Input />
                                     )}
@@ -836,6 +816,11 @@ class Student extends React.Component {
                 title: '班级',
                 key: 'class_name',
                 dataIndex: 'class_name',
+            },
+            {
+                title: '手机号码',
+                key: 'phone',
+                dataIndex: 'phone',
             }
             ]; 
         return (

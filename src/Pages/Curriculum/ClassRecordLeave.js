@@ -147,9 +147,14 @@ class ClassRecordLeave extends React.Component {
                 },
             },
             {
-                title: '签到时间',
+                title: '请假时间',
                 key: 'update_time',
                 dataIndex: 'update_time',
+            },
+            {
+                title: '请假理由',
+                key: 'remark',
+                dataIndex: 'remark',
             },
             {
                 title: '签到情况',
@@ -163,8 +168,8 @@ class ClassRecordLeave extends React.Component {
                     <div className="am-u-sm-12 am-margin-vertical">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
-                                <Popconfirm title="确定补签？" 
-                                    okText="补签" cancelText="取消" 
+                                <Popconfirm title="确定审批？" 
+                                    okText="审批" cancelText="取消" 
                                     onConfirm={this.editOpt.bind(this)}>
                                     <button className="am-btn am-btn-default am-margin-left-xs">
                                         <Icon type="edit" />

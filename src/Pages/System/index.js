@@ -3,6 +3,10 @@ module.exports = {
 
     childRoutes: [
         {
+            path: 'banner',
+            component: require("./Banner"), 
+        },
+        {
             path: 'account',
             component: require("./Account"), 
         },
