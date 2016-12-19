@@ -219,10 +219,7 @@ class SubjectTimetableDetail extends React.Component {
                                     paddingLeft: "100px"
                                 }}>
                                     <QRCodeReact 
-                                    value={`http://120.76.21.117/api/v1/curriculum/attend?\
-                                        weekday=${item.weekday}&start_time=${item.start_time}\
-                                        &end_time=${item.end_time}&subject_timetable_id=${detail.id}\
-                                        &type=0&md=${md}`} />
+                                    value={`http://120.76.21.117/api/v1/curriculum/attend?weekday=${item.weekday}&start_time=${item.start_time}&end_time=${item.end_time}&subject_timetable_id=${detail.id}&type=0&md=${md}`} />
                                 </div>
                             </Tabs.TabPane>
                             );
