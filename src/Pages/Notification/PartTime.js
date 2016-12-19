@@ -580,6 +580,11 @@ class PartTime extends React.Component {
                 dataIndex: 'student_name',
             },
             {
+                title: '申请留言',
+                key: 'remark',
+                dataIndex: 'remark',
+            },
+            {
                 title: '操作',
                 key: 'type',
                 dataIndex: 'type',

@@ -508,7 +508,6 @@ const EditForm = Form.create()(
                             <Col span={24}>
                                 <Form.Item label="备注" >
                                     {getFieldDecorator('remark', {
-                                        rules: [{ required: true, message: "不能为空" }],
                                         initialValue: data.remark,
                                     })(
                                         <Input type="textarea" autosize={{ minRows: 2, maxRows: 6 }} />

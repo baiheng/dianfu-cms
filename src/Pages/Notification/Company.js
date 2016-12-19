@@ -1,6 +1,6 @@
 import React from 'react'
 import { hashHistory } from 'react-router'
-import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, Upload, message, Card } from 'antd'
+import { Table, Button, Icon, Modal, Form, Input, Radio, Select, Popconfirm, Upload, message, Card, Row, Col} from 'antd'
 import { user } from 'config'
 
 
@@ -70,6 +70,54 @@ const NewForm = Form.create()(
                                 <Input placeholder="|分隔多个标签" />
                             )}
                         </Form.Item>
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Form.Item label="地点">
+                                {getFieldDecorator('location', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item label="公司类型">
+                                {getFieldDecorator('company_type', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Form.Item label="业务">
+                                {getFieldDecorator('business', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item label="规模">
+                                {getFieldDecorator('size', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
                     </Form>
                 </div>
                 <div>
@@ -179,6 +227,58 @@ const EditForm = Form.create()(
                                 <Input placeholder="|分隔多个标签" />
                             )}
                         </Form.Item>
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Form.Item label="地点">
+                                {getFieldDecorator('location', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: data.location,
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item label="公司类型">
+                                {getFieldDecorator('company_type', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: data.company_type,
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={16}>
+                            <Col span={12}>
+                                <Form.Item label="业务">
+                                {getFieldDecorator('business', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: data.business,
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item label="规模">
+                                {getFieldDecorator('size', {
+                                    rules: [
+                                        { required: true, message: '不能为空' },
+                                    ],
+                                    initialValue: data.size,
+                                    })(
+                                        <Input />
+                                    )}
+                                </Form.Item>
+                            </Col>
+                        </Row>
                     </Form>
                 </div>
                 <div>
@@ -490,7 +590,27 @@ class Company extends React.Component {
                 title: '公司标签',
                 key: 'label_name',
                 dataIndex: 'label_name',
-            }
+            },
+            {
+                title: '公司地点',
+                key: 'location',
+                dataIndex: 'location',
+            },
+            {
+                title: '公司类型',
+                key: 'company_type',
+                dataIndex: 'company_type',
+            },
+            {
+                title: '公司业务',
+                key: 'business',
+                dataIndex: 'business',
+            },
+            {
+                title: '公司规模',
+                key: 'size',
+                dataIndex: 'size',
+            },
             ]; 
         return (
             <div>

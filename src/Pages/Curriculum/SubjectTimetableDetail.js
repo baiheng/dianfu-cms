@@ -210,6 +210,7 @@ class SubjectTimetableDetail extends React.Component {
                     <Tabs defaultActiveKey="0">
                     {
                         detail.class_time_json && detail.class_time_json.map((item, index) => {
+                            let md = window.btoa(item.weekday + "|" + item.start_time + "|" + item.end_time + "|" + detail.id);
                             return (
                                 <Tabs.TabPane tab={class_time_name_list[index]} key={"" + index}>
                                 <div style={{
@@ -217,7 +218,11 @@ class SubjectTimetableDetail extends React.Component {
                                     height: "300px",
                                     paddingLeft: "100px"
                                 }}>
-                                    <QRCodeReact value={`http://127.0.0.1:3011/api/v1/curriculum/attend?weekday=${item.weekday}&start_time=${item.start_time}&end_time=${item.end_time}&subject_timetable_id=${detail.id}&type=0`} />
+                                    <QRCodeReact 
+                                    value={`http://120.76.21.117/api/v1/curriculum/attend?\
+                                        weekday=${item.weekday}&start_time=${item.start_time}\
+                                        &end_time=${item.end_time}&subject_timetable_id=${detail.id}\
+                                        &type=0&md=${md}`} />
                                 </div>
                             </Tabs.TabPane>
                             );
