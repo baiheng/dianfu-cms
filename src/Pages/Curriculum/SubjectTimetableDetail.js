@@ -121,9 +121,7 @@ class SubjectTimetableDetail extends React.Component {
                                 }}>
                                     签到二维码
                                 </button>
-                                <button className="am-btn am-btn-default am-margin-left-xs">
-                                    导出上课学生
-                                </button>
+                                
                             </div>
                         </div>
                     </div>
