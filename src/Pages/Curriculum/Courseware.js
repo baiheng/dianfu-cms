@@ -35,10 +35,10 @@ const NewForm = Form.create()(
                                 <Select placeholder="请选择"
                                     getPopupContainer={() => document.getElementById('new-form-area')}>
                                 {
-                                    user.conf["curriculum.subject_timetable.start_time"].map((item, index) => {
-                                        if(item[0] >= detail.start_time && item[0] <= detail.end_time){
-                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                        }
+                                    user.conf["curriculum.subject_timetable.start_week"].filter((item) => {
+                                        return item[0] >= detail.start_week && item[0] <= detail.end_week;
+                                    }).map((item, index) => {
+                                        return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
                                     })
                                 }
                                 </Select>
@@ -76,13 +76,30 @@ const NewForm = Form.create()(
                                 coursewareUploadChange(info);
                             }}
                           >
-                            <Button type="ghost" className="am-margin-left-xs" style={{width: "100px", height: "100px"}}>
+                            <Button type="ghost" className="am-margin-left-xs">
                                 上传PDF课件
                             </Button>
                         </Upload>
                     </div> :
                     <div>
-                        <a src={coursewareUrl}>PDF课件</a>
+                        <a href={coursewareUrl} target="_blank">PDF课件</a>
+                        <Upload
+                            className="am-margin-right-xs"
+                            name="file"
+                            showUploadList={false}
+                            action="/api/v1/curriculum/courseware_upload"
+                            accept="*/*"
+                            beforeUpload={(file) => {
+                                return beforeUpload(file);
+                            }}
+                            onChange={(info) => {
+                                coursewareUploadChange(info);
+                            }}
+                          >
+                            <Button type="ghost" className="am-margin-left-xs">
+                                更换PDF课件
+                            </Button>
+                        </Upload>
                     </div> 
                 }
             </Modal>
@@ -125,15 +142,15 @@ const EditForm = Form.create()(
                         <Form.Item label="上课周">
                             {getFieldDecorator('week', {
                                 rules: [{ required: true, message: "不能为空" }],
-                                initialValue: data.week,
+                                initialValue: "" + data.week,
                             })(
                                 <Select placeholder="请选择"
                                     getPopupContainer={() => document.getElementById('edit-form-area')}>
                                 {
-                                    user.conf["curriculum.subject_timetable.start_time"].map((item, index) => {
-                                        if(item[0] >= detail.start_time && item[0] <= detail.end_time){
-                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
-                                        }
+                                    user.conf["curriculum.subject_timetable.start_week"].filter((item) => {
+                                        return item[0] >= detail.start_week && item[0] <= detail.end_week;
+                                    }).map((item, index) => {
+                                        return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
                                     })
                                 }
                                 </Select>
@@ -157,9 +174,7 @@ const EditForm = Form.create()(
                     </Form>
                 </div>
                 <div>
-                    <a src={coursewareUrl}>PDF课件</a>
-                </div> 
-                <div>
+                    <a href={coursewareUrl} target="_blank">PDF课件</a>
                     <Upload
                         className="am-margin-right-xs"
                         name="file"
@@ -173,7 +188,7 @@ const EditForm = Form.create()(
                             coursewareUploadChange(info);
                         }}
                       >
-                        <Button type="ghost" className="am-margin-left-xs" style={{width: "100px", height: "100px"}}>
+                        <Button type="ghost" className="am-margin-left-xs">
                             更换PDF课件
                         </Button>
                     </Upload>
@@ -367,9 +382,9 @@ class Courseware extends React.Component {
             message.error('上传课件需要PDF格式');
             return false;
         }
-        const isLt2M = file.size / 1024 / 1024 < 4;
+        const isLt2M = file.size / 1024 / 1024 < 20;
         if (!isLt2M) {
-            message.error('上传课件需要小于 4MB!');
+            message.error('上传课件需要小于 20MB!');
             return false;
         }
         return true;
@@ -404,6 +419,19 @@ class Courseware extends React.Component {
                 dataIndex: 'name',
             },
             {
+                title: '上课周',
+                key: 'week_name',
+                dataIndex: 'week_name',
+            },
+            {
+                title: '上课时间',
+                key: 'class_time_name',
+                dataIndex: 'class_time_name',
+                render: (text, record, index) => {
+                    return `${record.weekday_name} ${record.start_time_name} ~ ${record.end_time_name} `
+                },
+            },
+            {
                 title: '上传时间',
                 key: 'create_time',
                 dataIndex: 'create_time',
@@ -414,7 +442,7 @@ class Courseware extends React.Component {
                 dataIndex: 'courseware_url',
                 render: (text, record, index) => {
                     return (
-                        <a src={record.courseware_url}>下载</a>
+                        <a href={record.courseware_url} target="_blank">下载</a>
                     );
                 },
             }
@@ -429,6 +457,7 @@ class Courseware extends React.Component {
                                     onClick={()=>{
                                         this.setState({
                                             modalType: "add",
+                                            coursewareUrl: "",
                                         });
                                     }}
                                 >
@@ -461,9 +490,9 @@ class Courseware extends React.Component {
                                     <span className="am-input-group-btn">
                                         <button className="am-btn am-btn-default" type="button" 
                                         onClick={()=>{
-                                                let v = this.refs.name.value;
+                                                let v = "name^" + this.refs.name.value;
                                                 this.setState({
-                                                    search: Object.assign({},  this.state.search, {name: v})
+                                                    search: Object.assign({},  this.state.search, {"like": v})
                                                 });
                                             }}>
                                             <span className="am-icon-search"></span>
