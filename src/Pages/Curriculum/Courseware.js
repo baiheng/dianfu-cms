@@ -6,8 +6,8 @@ import { user } from 'config'
 
 const NewForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, title, confirmLoading, sender, beforeUpload, 
-            logoUploadChange, newImgUrl, imgUrl, imgUploadChange, delImgUrl} = props;
+        const { visible, onCancel, onOk, form, title, confirmLoading, beforeUpload, 
+            coursewareUrl, coursewareUploadChange, detail, class_time_name_list} = props;
         const { getFieldDecorator } = form;
         return (
             <Modal
@@ -18,20 +18,62 @@ const NewForm = Form.create()(
                 confirmLoading={confirmLoading}
                 maskClosable={false}
             >
+                <div id="new-form-area" className="am-margin-top">
+                    <Form vertical>
+                        <Form.Item label="课件名字">
+                            {getFieldDecorator('name', {
+                                rules: [{ required: true, message: "不能为空" }],
+                                initialValue: "",
+                            })(
+                                <Input />
+                            )}
+                        </Form.Item>
+                        <Form.Item label="上课周">
+                            {getFieldDecorator('week', {
+                                rules: [{ required: true, message: "不能为空" }],
+                            })(
+                                <Select placeholder="请选择"
+                                    getPopupContainer={() => document.getElementById('new-form-area')}>
+                                {
+                                    user.conf["curriculum.subject_timetable.start_time"].map((item, index) => {
+                                        if(item[0] >= detail.start_time && item[0] <= detail.end_time){
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        }
+                                    })
+                                }
+                                </Select>
+                            )}
+                        </Form.Item>
+                        <Form.Item label="上课时间">
+                            {getFieldDecorator('class_time', {
+                                rules: [{ required: true, message: "不能为空" }],
+                            })(
+                                <Select placeholder="请选择"
+                                    getPopupContainer={() => document.getElementById('new-form-area')}>
+                                {
+                                    detail.class_time_json && detail.class_time_json.map((item, index) => {
+                                        return <Select.Option value={`${index}`} key={index}>{class_time_name_list[index]}</Select.Option>;
+                                    })
+                                }
+                                </Select>
+                            )}
+                        </Form.Item>
+                    </Form>
+                </div>
                 {
-                    newImgUrl == ""? 
+                    coursewareUrl == ""? 
                     <div>
                         <Upload
                             className="am-margin-right-xs"
                             name="file"
                             showUploadList={false}
-                            action="/api/v1/curriculum/img_upload"
+                            action="/api/v1/curriculum/courseware_upload"
                             accept="*/*"
                             beforeUpload={(file) => {
                                 return beforeUpload(file);
                             }}
                             onChange={(info) => {
-                                logoUploadChange(info);
+                                coursewareUploadChange(info);
                             }}
                           >
                             <Button type="ghost" className="am-margin-left-xs" style={{width: "100px", height: "100px"}}>
@@ -40,127 +82,9 @@ const NewForm = Form.create()(
                         </Upload>
                     </div> :
                     <div>
-                        <img src={newImgUrl} height="100" width="100" />
+                        <a src={coursewareUrl}>PDF课件</a>
                     </div> 
                 }
-                <div id="new-form-area" className="am-margin-top">
-                    <Form vertical>
-                        <Form.Item label="公司名字">
-                            {getFieldDecorator('name', {
-                                rules: [{ required: true, message: "不能为空" }],
-                                initialValue: "",
-                            })(
-                                <Input />
-                            )}
-                        </Form.Item>
-                        <Form.Item label="描述">
-                            {getFieldDecorator('description', {
-                                rules: [{ required: true, message: "不能为空" }],
-                                initialValue: "",
-                            })(
-                                <Input  type="textarea" autosize={{ minRows: 3, maxRows: 8 }} />
-                            )}
-                        </Form.Item>
-                        <Form.Item label="标签">
-                        {getFieldDecorator('label_name', {
-                            rules: [
-                                { required: true, message: '不能为空' },
-                            ],
-                            })(
-                                <Input placeholder="|分隔多个标签" />
-                            )}
-                        </Form.Item>
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Form.Item label="地点">
-                                {getFieldDecorator('location', {
-                                    rules: [
-                                        { required: true, message: '不能为空' },
-                                    ],
-                                    })(
-                                        <Input />
-                                    )}
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item label="公司类型">
-                                {getFieldDecorator('company_type', {
-                                    rules: [
-                                        { required: true, message: '不能为空' },
-                                    ],
-                                    })(
-                                        <Input />
-                                    )}
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Form.Item label="业务">
-                                {getFieldDecorator('business', {
-                                    rules: [
-                                        { required: true, message: '不能为空' },
-                                    ],
-                                    })(
-                                        <Input />
-                                    )}
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item label="规模">
-                                {getFieldDecorator('size', {
-                                    rules: [
-                                        { required: true, message: '不能为空' },
-                                    ],
-                                    })(
-                                        <Input />
-                                    )}
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                    </Form>
-                </div>
-                <div>
-                    {
-                        imgUrl.map((item, index) =>{
-                            return (
-                                <div key={index} 
-                                    style={{
-                                        display: "inline-block", 
-                                        width: "200xp", 
-                                        height: "135px", 
-                                        border: "1px dashed #d9d9d9",
-                                        marginLeft: "10px",
-                                        marginBottom: "10px",
-                                    }}>
-                                    <img src={item} width="200" height="100" />
-                                    <br/>
-                                    <Button type="ghost" onClick={() => {
-                                        delImgUrl(index);
-                                    }}>
-                                        <Icon type="delete" />
-                                    </Button>
-                                </div>
-                            );
-                        })
-                    }
-                    <Upload
-                        name="file"
-                        showUploadList={false}
-                        action="/api/v1/curriculum/courseware_upload"
-                        accept="image/*"
-                        beforeUpload={(file) => {
-                            return beforeUpload(file);
-                        }}
-                        onChange={(info) => {
-                            imgUploadChange(info);
-                        }}
-                      >
-                        <Button type="ghost" className="am-margin-left-xs">
-                            添加公司图片
-                        </Button>
-                    </Upload>
-                </div>
             </Modal>
     );
   }
@@ -168,9 +92,17 @@ const NewForm = Form.create()(
 
 const EditForm = Form.create()(
     (props) => {
-        const { visible, onCancel, onOk, form, title, confirmLoading, data, 
-            beforeUpload, logoUploadChange, newImgUrl, imgUrl, imgUploadChange, delImgUrl} = props;
+        const { visible, onCancel, onOk, form, title, confirmLoading, beforeUpload, data,
+            coursewareUrl, coursewareUploadChange, detail, class_time_name_list} = props;
         const { getFieldDecorator } = form;
+        let class_time = 0;
+        for(let i=0; detail.class_time_json && i<detail.class_time_json.length; i++){
+            let item = detail.class_time_json[i];
+            if(item.weekday == data.weekday && item.start_time == data.start_time && item.end_time == data.end_time){
+                class_time = i;
+                break;
+            }
+        }
         return (
             <Modal
                 visible={visible}
@@ -180,148 +112,72 @@ const EditForm = Form.create()(
                 confirmLoading={confirmLoading}
                 maskClosable={false}
             >
+                <div id="edit-form-area" className="am-margin-top">
+                    <Form vertical>
+                        <Form.Item label="课件名字">
+                            {getFieldDecorator('name', {
+                                rules: [{ required: true, message: "不能为空" }],
+                                initialValue: data.name,
+                            })(
+                                <Input />
+                            )}
+                        </Form.Item>
+                        <Form.Item label="上课周">
+                            {getFieldDecorator('week', {
+                                rules: [{ required: true, message: "不能为空" }],
+                                initialValue: data.week,
+                            })(
+                                <Select placeholder="请选择"
+                                    getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                {
+                                    user.conf["curriculum.subject_timetable.start_time"].map((item, index) => {
+                                        if(item[0] >= detail.start_time && item[0] <= detail.end_time){
+                                            return <Select.Option value={"" + item[0]} key={index}>{item[1]}</Select.Option>;
+                                        }
+                                    })
+                                }
+                                </Select>
+                            )}
+                        </Form.Item>
+                        <Form.Item label="上课时间">
+                            {getFieldDecorator('class_time', {
+                                rules: [{ required: true, message: "不能为空" }],
+                                initialValue: "" + class_time,
+                            })(
+                                <Select placeholder="请选择"
+                                    getPopupContainer={() => document.getElementById('edit-form-area')}>
+                                {
+                                    detail.class_time_json && detail.class_time_json.map((item, index) => {
+                                        return <Select.Option value={`${index}`} key={index}>{class_time_name_list[index]}</Select.Option>;
+                                    })
+                                }
+                                </Select>
+                            )}
+                        </Form.Item>
+                    </Form>
+                </div>
                 <div>
-                    <img src={newImgUrl} height="100" width="100" />
+                    <a src={coursewareUrl}>PDF课件</a>
+                </div> 
+                <div>
                     <Upload
+                        className="am-margin-right-xs"
                         name="file"
                         showUploadList={false}
-                        action="/api/v1/system/courseware_upload"
+                        action="/api/v1/curriculum/courseware_upload"
                         accept="*/*"
                         beforeUpload={(file) => {
                             return beforeUpload(file);
                         }}
                         onChange={(info) => {
-                            logoUploadChange(info);
+                            coursewareUploadChange(info);
                         }}
                       >
                         <Button type="ghost" className="am-margin-left-xs" style={{width: "100px", height: "100px"}}>
-                            更换logo
+                            更换PDF课件
                         </Button>
                     </Upload>
-                </div>
-                <div id="edit-form-area" className="am-margin-top">
-                    <Form vertical>
-                        <Form.Item label="公司名字">
-                            {getFieldDecorator('name', {
-                                rules: [{ required: true, message: "不能为空" }],
-                                initialValue: "" + data.name,
-                            })(
-                                <Input />
-                            )}
-                        </Form.Item>
-                        <Form.Item label="描述">
-                            {getFieldDecorator('description', {
-                                rules: [{ required: true, message: "不能为空" }],
-                                initialValue: "" + data.description,
-                            })(
-                                <Input  type="textarea" autosize={{ minRows: 3, maxRows: 8 }} />
-                            )}
-                        </Form.Item>
-                        <Form.Item label="标签">
-                        {getFieldDecorator('label_name', {
-                            rules: [
-                                { required: true, message: '不能为空' },
-                            ],
-                            initialValue: data.label_name,
-                            })(
-                                <Input placeholder="|分隔多个标签" />
-                            )}
-                        </Form.Item>
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Form.Item label="地点">
-                                {getFieldDecorator('location', {
-                                    rules: [
-                                        { required: true, message: '不能为空' },
-                                    ],
-                                    initialValue: data.location,
-                                    })(
-                                        <Input />
-                                    )}
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item label="公司类型">
-                                {getFieldDecorator('company_type', {
-                                    rules: [
-                                        { required: true, message: '不能为空' },
-                                    ],
-                                    initialValue: data.company_type,
-                                    })(
-                                        <Input />
-                                    )}
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                        <Row gutter={16}>
-                            <Col span={12}>
-                                <Form.Item label="业务">
-                                {getFieldDecorator('business', {
-                                    rules: [
-                                        { required: true, message: '不能为空' },
-                                    ],
-                                    initialValue: data.business,
-                                    })(
-                                        <Input />
-                                    )}
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item label="规模">
-                                {getFieldDecorator('size', {
-                                    rules: [
-                                        { required: true, message: '不能为空' },
-                                    ],
-                                    initialValue: data.size,
-                                    })(
-                                        <Input />
-                                    )}
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                    </Form>
-                </div>
-                <div>
-                    {
-                        imgUrl.map((item, index) =>{
-                            return (
-                                <div key={index} 
-                                    style={{
-                                        display: "inline-block", 
-                                        width: "200xp", 
-                                        height: "135px", 
-                                        border: "1px dashed #d9d9d9",
-                                        marginLeft: "10px",
-                                        marginBottom: "10px",
-                                    }}>
-                                    <img src={item} width="200" height="100" />
-                                    <br/>
-                                    <Button type="ghost" onClick={() => {
-                                        delImgUrl(index);
-                                    }}>
-                                        <Icon type="delete" />
-                                    </Button>
-                                </div>
-                            );
-                        })
-                    }
-                    <Upload
-                        name="file"
-                        showUploadList={false}
-                        action="/api/v1/system/img_upload"
-                        accept="image/*"
-                        beforeUpload={(file) => {
-                            return beforeUpload(file);
-                        }}
-                        onChange={(info) => {
-                            imgUploadChange(info);
-                        }}
-                      >
-                        <Button type="ghost" className="am-margin-left-xs">
-                            添加公司图片
-                        </Button>
-                    </Upload>
-                </div>
+                </div> 
             </Modal>
     );
   }
@@ -426,6 +282,7 @@ class Courseware extends React.Component {
                         modalType: "close",
                     });
                     this.getList();
+                    this.newForm.resetFields();
                 }else{
                     user.showRequestError(data)
                 }
@@ -457,6 +314,7 @@ class Courseware extends React.Component {
                         modalType: "close",
                     });
                     this.getList();
+                    this.editForm.resetFields();
                 }else{
                     user.showRequestError(data)
                 }
@@ -537,8 +395,7 @@ class Courseware extends React.Component {
             message.error(`${info.file.name} file upload failed.`);
         }
     }
-
-
+ 
     render(){
         const columns = [
             {
@@ -657,7 +514,6 @@ class Courseware extends React.Component {
                                         });
                                     }
                                 }}
-
                             />
                         </div>
                     </div>
@@ -673,7 +529,7 @@ class Courseware extends React.Component {
                             modalType: "close",
                         });
                     }}
-                    title="新建课件"
+                    title="添加课件"
                     confirmLoading={this.state.confirmLoading}
                     onOk={() =>{
                         this.newForm.validateFields((err, values) => {
@@ -684,11 +540,17 @@ class Courseware extends React.Component {
                                 return user.showMsg("请上传PDF课件");
                             }
                             values.courseware_url = this.state.coursewareUrl;
+                            let class_time = this.props.detail.class_time_json[values.class_time];
+                            values.weekday = class_time.weekday;
+                            values.start_time = class_time.start_time;
+                            values.end_time = class_time.end_time;
+                            delete values.class_time;
                             this.newOpt(values);
                         });
                     }}
                     beforeUpload={this.beforeUpload}
                     coursewareUploadChange={this.coursewareUploadChange.bind(this)}
+                    {...this.props}
                     {...this.state}
                 />
 
@@ -714,14 +576,19 @@ class Courseware extends React.Component {
                                 return user.showMsg("请上传PDF课件");
                             }
                             values.courseware_url = this.state.coursewareUrl;
+                            let class_time = this.props.detail.class_time_json[values.class_time];
+                            values.weekday = class_time.weekday;
+                            values.start_time = class_time.start_time;
+                            values.end_time = class_time.end_time;
+                            delete values.class_time;
                             this.editOpt(values);
                         });
                     }}
                     beforeUpload={this.beforeUpload}
                     coursewareUploadChange={this.coursewareUploadChange.bind(this)}
+                    {...this.props}
                     {...this.state}
                 />
-
 
             </div>
         )

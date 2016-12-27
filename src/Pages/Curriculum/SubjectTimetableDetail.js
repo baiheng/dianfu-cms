@@ -8,6 +8,7 @@ import ClassRecord from './ClassRecord'
 import ClassRecordLeave from './ClassRecordLeave'
 import ClassRecordNotAttend from './ClassRecordNotAttend'
 import QRCodeReact from './QRCodeReact'
+import Courseware from './Courseware'
 
 
 
@@ -183,6 +184,13 @@ class SubjectTimetableDetail extends React.Component {
                                 <ClassRecordNotAttend
                                     detail={this.state.detail}
                                     id={this.props.location.query.subject_timetable_id}
+                                />
+                            </Tabs.TabPane>
+                            <Tabs.TabPane tab="课件" key="5">
+                                <Courseware
+                                    detail={this.state.detail}
+                                    id={this.props.location.query.subject_timetable_id}
+                                    class_time_name_list={class_time_name_list}
                                 />
                             </Tabs.TabPane>
                         </Tabs>
