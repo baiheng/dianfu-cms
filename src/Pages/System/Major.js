@@ -243,7 +243,7 @@ class Major extends React.Component {
                     <div className="am-u-sm-12 am-margin-top">
                         <div className="am-g am-g-collapse">
                             <div className="am-u-sm-6"> 
-                                <h2>系统管理 / {this.props.location.state.academy_name} / 专业列表</h2>
+                                <h2>系统管理 / {this.props.location.state.name} / 专业列表</h2>
                             </div>
                         </div>
                     </div>
