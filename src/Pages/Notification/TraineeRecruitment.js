@@ -756,7 +756,7 @@ class TraineeRecruitment extends React.Component {
                             if(this.state.newImgUrl == ""){
                                 return user.showMsg("请上传公司logo");
                             }
-                            values.label_json = values.label_name.trim().split(" ");
+                            values.label_json = values.label_name.trim().split("|").map((item)=>{return item.trim()});
                             values.logo_url = this.state.newImgUrl;
                             delete values.label_name;
                             this.newOpt(values);
@@ -788,7 +788,7 @@ class TraineeRecruitment extends React.Component {
                             if(this.state.newImgUrl == ""){
                                 return user.showMsg("请上传公司logo");
                             }
-                            values.label_json = values.label_name.trim().split(" ");
+                            values.label_json = values.label_name.trim().split("|").map((item)=>{return item.trim()});
                             values.logo_url = this.state.newImgUrl;
                             delete values.label_name;
                             this.editOpt(values);
